@@ -1,0 +1,30 @@
+{
+  "items": [
+    "minecraft:diamond_sword"
+  ],
+  "tier": 3,
+  "rarity": "common",
+  "set": "itemsrarity:champion",
+  "stats": {
+    "damage": [
+      6,
+      8
+    ],
+    "strength": [
+      6,
+      10
+    ],
+    "critical": [
+      2,
+      5
+    ],
+    "critical_damage": [
+      6,
+      12
+    ],
+    "agility": [
+      -3,
+      -1
+    ]
+  }
+}

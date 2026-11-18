@@ -1,0 +1,11 @@
+{
+  "items": ["minecraft:mace"],
+  "tier": 4,
+  "rarity": "common",
+  "stats": {
+    "damage": [5, 7],
+    "strength": [6, 10],
+    "fall": [4, 8],
+    "critical_damage": [25, 45]
+  }
+}

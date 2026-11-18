@@ -1,0 +1,30 @@
+{
+  "items": [
+    "minecraft:netherite_sword"
+  ],
+  "tier": 4,
+  "rarity": "common",
+  "set": "itemsrarity:nether_lord",
+  "stats": {
+    "damage": [
+      7,
+      9
+    ],
+    "strength": [
+      8,
+      12
+    ],
+    "critical": [
+      3,
+      6
+    ],
+    "life_steal": [
+      1,
+      2
+    ],
+    "healing": [
+      -8,
+      -3
+    ]
+  }
+}

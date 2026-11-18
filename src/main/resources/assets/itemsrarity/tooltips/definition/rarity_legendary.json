@@ -3,6 +3,6 @@
   "style": "itemsrarity:legendary",
   "filter": {
     "type": "obscure_tooltips:rarity",
-    "rarity": "legendary"
+    "rarity": "itemsrarity:legendary"
   }
 }

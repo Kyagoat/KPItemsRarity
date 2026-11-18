@@ -1,0 +1,22 @@
+{
+  "items": [
+    "minecraft:golden_pickaxe"
+  ],
+  "tier": 2,
+  "rarity": "common",
+  "set": "itemsrarity:orpailleur",
+  "stats": {
+    "harvest": [
+      11,
+      15
+    ],
+    "luck": [
+      0,
+      1
+    ],
+    "resistance": [
+      -1,
+      0
+    ]
+  }
+}

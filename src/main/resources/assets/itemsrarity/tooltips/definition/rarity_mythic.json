@@ -3,6 +3,6 @@
   "style": "itemsrarity:mythic",
   "filter": {
     "type": "obscure_tooltips:rarity",
-    "rarity": "mythic"
+    "rarity": "itemsrarity:mythic"
   }
 }

@@ -1,31 +1,20 @@
 package net.Kyap.ItemsRarity.item;
 
-import net.Kyap.ItemsRarity.ItemsRarity;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.Tiers;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.ForgeTier;
-import net.minecraftforge.common.TierSortingRegistry;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.common.SimpleTier;
 
-import java.util.List;
+public final class ModToolTiers {
+    private ModToolTiers() {}
 
-public class ModToolTiers {
-
-    public static final Tier EMERALD = TierSortingRegistry.registerTier(
-            new ForgeTier(
-                    2,
-                    32,
-                    6.0F,
-                    6.0F,
-                    15,
-                    BlockTags.NEEDS_IRON_TOOL,
-                    () -> Ingredient.of(Items.EMERALD)
-            ),
-            new ResourceLocation(ItemsRarity.MOD_ID, "emerald"),
-            List.of(Tiers.GOLD),
-            List.of(Tiers.DIAMOND)
-    );
+    // 1.21 : plus de TierSortingRegistry ; le niveau de minage passe par un tag de blocs "incorrects".
+    public static final Tier EMERALD = new SimpleTier(
+            BlockTags.INCORRECT_FOR_IRON_TOOL,
+            32,      // durabilité
+            6.0F,    // vitesse de minage
+            6.0F,    // bonus de dégâts
+            15,      // enchantabilité
+            () -> Ingredient.of(Items.EMERALD));
 }

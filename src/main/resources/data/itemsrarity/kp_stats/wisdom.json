@@ -1,0 +1,12 @@
+{
+  "attribute": "itemsrarity:experience_gained",
+  "operation": "add_value",
+  "scale": 0.01,
+  "format": "percent",
+  "color": "#BE7BE0",
+  "category": "utility",
+  "order": 510,
+  "rune_power": 1,
+  "exo": true,
+  "weight": 0.3
+}

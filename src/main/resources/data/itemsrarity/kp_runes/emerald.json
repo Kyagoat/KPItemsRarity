@@ -1,0 +1,13 @@
+{
+  "items": [
+    "minecraft:emerald"
+  ],
+  "runes": [
+    {
+      "stat": "wisdom",
+      "power": 3,
+      "chance": 0.6,
+      "count": 1
+    }
+  ]
+}

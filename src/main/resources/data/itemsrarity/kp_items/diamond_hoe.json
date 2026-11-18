@@ -1,0 +1,9 @@
+{
+  "items": ["minecraft:diamond_hoe"],
+  "tier": 3,
+  "rarity": "common",
+  "stats": {
+    "wisdom": [25, 40],
+    "harvest": [0, 4]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "items": [
+    "minecraft:iron_boots"
+  ],
+  "tier": 2,
+  "rarity": "common",
+  "set": "itemsrarity:iron_guard",
+  "stats": {
+    "vitality": [
+      0,
+      1
+    ],
+    "fall": [
+      1,
+      4
+    ],
+    "endurance": [
+      3,
+      6
+    ],
+    "agility": [
+      -2,
+      -1
+    ]
+  }
+}

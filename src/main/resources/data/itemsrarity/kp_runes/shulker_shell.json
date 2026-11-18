@@ -1,0 +1,13 @@
+{
+  "items": [
+    "minecraft:shulker_shell"
+  ],
+  "runes": [
+    {
+      "stat": "resistance",
+      "power": 1,
+      "chance": 0.8,
+      "count": 1
+    }
+  ]
+}

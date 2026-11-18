@@ -1,0 +1,14 @@
+{
+  "rarity": "rare",
+  "items": [
+    "create:precision_mechanism",
+    "create:sturdy_sheet",
+    "create:chromatic_compound",
+    "create:netherite_diving_helmet",
+    "create:netherite_diving_boots",
+    "create:netherite_backtank",
+    "create:netherite_backtank_placeable",
+    "create:schematicannon",
+    "create:experience_block"
+  ]
+}

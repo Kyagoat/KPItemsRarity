@@ -1,0 +1,11 @@
+{
+  "items": ["minecraft:diamond_axe"],
+  "tier": 3,
+  "rarity": "common",
+  "stats": {
+    "damage": [8, 10],
+    "strength": [4, 6],
+    "critical_damage": [15, 30],
+    "armor_pierce": [1, 2]
+  }
+}

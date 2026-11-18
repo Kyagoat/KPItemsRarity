@@ -1,0 +1,13 @@
+{
+  "attribute": "itemsrarity:thorns",
+  "operation": "add_value",
+  "scale": 0.01,
+  "format": "percent",
+  "color": "#E09D7B",
+  "category": "defense",
+  "order": 119,
+  "rune_power": 1,
+  "exo": false,
+  "weight": 0.8,
+  "legacy": true
+}

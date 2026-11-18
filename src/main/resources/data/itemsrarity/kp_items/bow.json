@@ -1,0 +1,22 @@
+{
+  "items": [
+    "minecraft:bow"
+  ],
+  "tier": 1,
+  "rarity": "common",
+  "set": "itemsrarity:rodeur",
+  "stats": {
+    "arrow_damage": [
+      4,
+      7
+    ],
+    "critical": [
+      0,
+      1
+    ],
+    "vitality": [
+      -1,
+      0
+    ]
+  }
+}

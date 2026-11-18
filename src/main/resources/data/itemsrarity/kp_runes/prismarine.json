@@ -1,0 +1,20 @@
+{
+  "items": [
+    "minecraft:prismarine_crystals",
+    "minecraft:prismarine_shard"
+  ],
+  "runes": [
+    {
+      "stat": "apnea",
+      "power": 1,
+      "chance": 0.3,
+      "count": 1
+    },
+    {
+      "stat": "swim",
+      "power": 1,
+      "chance": 0.3,
+      "count": 1
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "attribute": "itemsrarity:crit_chance",
+  "operation": "add_value",
+  "scale": 0.01,
+  "format": "percent",
+  "color": "#E0D37B",
+  "category": "combat",
+  "order": 20,
+  "rune_power": 1,
+  "exo": true,
+  "weight": 1
+}

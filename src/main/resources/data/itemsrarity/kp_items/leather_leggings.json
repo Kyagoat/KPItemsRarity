@@ -1,0 +1,18 @@
+{
+  "items": [
+    "minecraft:leather_leggings"
+  ],
+  "tier": 1,
+  "rarity": "common",
+  "set": "itemsrarity:rodeur",
+  "stats": {
+    "vitality": [
+      0,
+      1
+    ],
+    "draw_speed": [
+      0,
+      1
+    ]
+  }
+}

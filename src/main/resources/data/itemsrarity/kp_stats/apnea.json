@@ -1,0 +1,12 @@
+{
+  "attribute": "minecraft:generic.oxygen_bonus",
+  "operation": "add_value",
+  "scale": 1,
+  "format": "int",
+  "color": "#7BBEE0",
+  "category": "mobility",
+  "order": 231,
+  "rune_power": 1,
+  "exo": false,
+  "weight": 1
+}

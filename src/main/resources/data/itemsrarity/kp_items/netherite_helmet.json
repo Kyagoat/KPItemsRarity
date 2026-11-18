@@ -1,0 +1,26 @@
+{
+  "items": [
+    "minecraft:netherite_helmet"
+  ],
+  "tier": 4,
+  "rarity": "common",
+  "set": "itemsrarity:nether_lord",
+  "stats": {
+    "vitality": [
+      2,
+      3
+    ],
+    "fire_resistance": [
+      12,
+      24
+    ],
+    "critical": [
+      1,
+      2
+    ],
+    "healing": [
+      -8,
+      -3
+    ]
+  }
+}

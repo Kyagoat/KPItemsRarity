@@ -1,0 +1,22 @@
+{
+  "items": [
+    "minecraft:leather_helmet"
+  ],
+  "tier": 1,
+  "rarity": "common",
+  "set": "itemsrarity:rodeur",
+  "stats": {
+    "arrow_damage": [
+      2,
+      5
+    ],
+    "critical": [
+      0,
+      2
+    ],
+    "vitality": [
+      -1,
+      0
+    ]
+  }
+}

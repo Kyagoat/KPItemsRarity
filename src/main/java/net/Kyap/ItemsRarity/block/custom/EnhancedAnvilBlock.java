@@ -1,16 +1,19 @@
 package net.Kyap.ItemsRarity.block.custom;
 
+import com.mojang.serialization.MapCodec;
+import net.Kyap.ItemsRarity.block.custom.particle.ParticleAnvilBlock;
 import net.Kyap.ItemsRarity.block.entity.custom.EnhancedAnvilBlockEntity;
 import net.Kyap.ItemsRarity.item.ModItems;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -22,27 +25,28 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static net.Kyap.ItemsRarity.block.custom.particle.ParticleAnvilBlock.spawnRarityParticles;
-
 public class EnhancedAnvilBlock extends BaseEntityBlock {
-
+    public static final MapCodec<EnhancedAnvilBlock> CODEC = simpleCodec(EnhancedAnvilBlock::new);
     public static final VoxelShape SHAPE = makeShape();
 
-    public EnhancedAnvilBlock(Properties pProperties) {
-        super(pProperties);
+    public EnhancedAnvilBlock(Properties properties) {
+        super(properties);
     }
 
     @Override
-    public @NotNull VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
+
+    @Override
+    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return SHAPE;
     }
 
     @Override
-    public @NotNull RenderShape getRenderShape(BlockState pState) {
+    protected RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
 
@@ -58,61 +62,57 @@ public class EnhancedAnvilBlock extends BaseEntityBlock {
     }
 
     @Override
-    public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
-        return new EnhancedAnvilBlockEntity(blockPos, blockState);
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new EnhancedAnvilBlockEntity(pos, state);
+    }
+
+    /** Clic droit avec le marteau d'émeraude : forger (comme le bouton "Forger" de l'écran). */
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack held, BlockState state, Level level, BlockPos pos,
+                                              Player player, InteractionHand hand, BlockHitResult hit) {
+        if (!held.is(ModItems.EMERALD_HAMMER.get())) {
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION; // -> ouvre l'interface
+        }
+        if (level.isClientSide()) {
+            return ItemInteractionResult.SUCCESS;
+        }
+        if (!(level.getBlockEntity(pos) instanceof EnhancedAnvilBlockEntity anvil)
+                || !(player instanceof net.minecraft.server.level.ServerPlayer serverPlayer)) {
+            return ItemInteractionResult.FAIL;
+        }
+        var outcome = anvil.forge(serverPlayer);
+        if (outcome != net.Kyap.ItemsRarity.forge.ForgeMagic.Outcome.INVALID) held.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
+        return ItemInteractionResult.CONSUME;
+    }
+
+    /** Clic droit sans objet (ou avec autre chose) : ouvrir l'interface. */
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof EnhancedAnvilBlockEntity anvil) {
+            player.openMenu(anvil, pos);
+        }
+        return InteractionResult.sidedSuccess(level.isClientSide());
+    }
+
+    public static void playUpgradeAnimation(Level level, BlockPos pos, EnhancedAnvilBlockEntity anvil, boolean success) {
+        if (success) {
+            ParticleAnvilBlock.spawnRarityParticles(level, pos, anvil);
+            level.playSound(null, pos, SoundEvents.ANVIL_USE, SoundSource.BLOCKS, 1.2f, 1.0f);
+            level.playSound(null, pos, SoundEvents.ANVIL_LAND, SoundSource.BLOCKS, 0.8f, 1.3f);
+            level.playSound(null, pos, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 0.6f, 1.5f);
+        } else {
+            ParticleAnvilBlock.spawnFailParticles(level, pos);
+            level.playSound(null, pos, SoundEvents.ANVIL_DESTROY, SoundSource.BLOCKS, 0.5f, 0.8f);
+        }
     }
 
     @Override
-    public @NotNull InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        if (!pLevel.isClientSide()) {
-            BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
-            if (blockEntity instanceof EnhancedAnvilBlockEntity enhancedAnvil) {
-                ItemStack heldItem = pPlayer.getItemInHand(pHand);
-                boolean hasEmeraldHammer = heldItem.getItem() == ModItems.EMERALD_HAMMER.get();
-                if (hasEmeraldHammer) {
-                    boolean canUpgrade = enhancedAnvil.canUpgrade();
-                    if (canUpgrade) {
-                        boolean success = enhancedAnvil.performUpgrade();
-                        if (success) {
-                            playUpgradeAnimation(pLevel, pPos, enhancedAnvil, true);
-                            return InteractionResult.SUCCESS;
-                        }
-                            playUpgradeAnimation(pLevel, pPos, enhancedAnvil, false);
-                    }
-                    return InteractionResult.FAIL;
-                } else {
-                    NetworkHooks.openScreen((ServerPlayer) pPlayer, enhancedAnvil, pPos);
-                    return InteractionResult.SUCCESS;
-                }
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof EnhancedAnvilBlockEntity anvil) {
+            for (int i = 0; i < anvil.getItemHandler().getSlots(); i++) {
+                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), anvil.getItemHandler().getStackInSlot(i));
             }
         }
-        return InteractionResult.sidedSuccess(pLevel.isClientSide());
-    }
-
-    private void playUpgradeAnimation(Level pLevel, BlockPos pPos, EnhancedAnvilBlockEntity enhancedAnvilBlock, boolean success){
-        if (success){
-            spawnRarityParticles(pLevel, pPos, enhancedAnvilBlock);
-            pLevel.playSound(null, pPos, SoundEvents.ANVIL_USE, SoundSource.BLOCKS, 1.2f, 1.0f); // Hammer sound
-            pLevel.playSound(null, pPos, SoundEvents.ANVIL_LAND, SoundSource.BLOCKS, 0.8f, 1.3f); // Impact sound
-            pLevel.playSound(null, pPos, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 0.6f, 1.5f); // Success sound
-        }
-        else {
-            pLevel.playSound(null, pPos, SoundEvents.ANVIL_DESTROY, SoundSource.BLOCKS, 0.5f, 0.8f); // Fail sound
-        }
-    }
-
-    @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (state.getBlock() != newState.getBlock()) {
-            BlockEntity blockEntity = level.getBlockEntity(pos);
-            if (blockEntity instanceof EnhancedAnvilBlockEntity enhancedAnvil) {
-                for (int i = 0; i < enhancedAnvil.getItemHandler().getSlots(); i++) {
-                    net.minecraft.world.Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(),
-                            enhancedAnvil.getItemHandler().getStackInSlot(i));
-                }
-            }
-        }
-        super.onRemove(state, level, pos, newState, isMoving);
+        super.onRemove(state, level, pos, newState, movedByPiston);
     }
 }
-

@@ -1,0 +1,21 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "itemsrarity:item/rune",
+    "layer1": "itemsrarity:item/rune_glyph"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "itemsrarity:size": 0.5
+      },
+      "model": "itemsrarity:item/rune_pa"
+    },
+    {
+      "predicate": {
+        "itemsrarity:size": 1.0
+      },
+      "model": "itemsrarity:item/rune_ra"
+    }
+  ]
+}

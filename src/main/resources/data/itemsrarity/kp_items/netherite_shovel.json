@@ -1,0 +1,9 @@
+{
+  "items": ["minecraft:netherite_shovel"],
+  "tier": 4,
+  "rarity": "common",
+  "stats": {
+    "harvest": [26, 34],
+    "agility": [2, 3]
+  }
+}

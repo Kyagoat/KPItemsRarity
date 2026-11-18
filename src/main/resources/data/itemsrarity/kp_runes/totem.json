@@ -1,0 +1,13 @@
+{
+  "items": [
+    "minecraft:totem_of_undying"
+  ],
+  "runes": [
+    {
+      "stat": "vitality",
+      "power": 10,
+      "chance": 1.0,
+      "count": 1
+    }
+  ]
+}

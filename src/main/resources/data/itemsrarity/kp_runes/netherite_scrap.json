@@ -1,0 +1,13 @@
+{
+  "items": [
+    "minecraft:netherite_scrap"
+  ],
+  "runes": [
+    {
+      "stat": "toughness",
+      "power": 1,
+      "chance": 0.8,
+      "count": 1
+    }
+  ]
+}

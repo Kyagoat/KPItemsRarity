@@ -1,0 +1,9 @@
+{
+  "items": ["minecraft:iron_hoe"],
+  "tier": 2,
+  "rarity": "common",
+  "stats": {
+    "wisdom": [15, 25],
+    "harvest": [0, 3]
+  }
+}

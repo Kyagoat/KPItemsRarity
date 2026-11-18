@@ -1,39 +1,39 @@
 package net.Kyap.ItemsRarity.item.custom;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import net.Kyap.ItemsRarity.item.ModToolTiers;
-import net.Kyap.ItemsRarity.util.ModRarities;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.Kyap.ItemsRarity.util.ModRarities.ModRarity;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.item.*;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.TieredItem;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 
+/**
+ * Marteau d'émeraude : clic droit sur l'enclume améliorée pour forger.
+ * Chaque forge lui retire 1 point de durabilité (puits de ressources).
+ */
 public class EmeraldHammer extends TieredItem {
-
-    private static final float ATTACK_DAMAGE = 10.0F;
-    private static final float ATTACK_SPEED = -3.4F;
+    private static final double ATTACK_DAMAGE = 10.0;
+    private static final double ATTACK_SPEED = -3.4;
 
     public EmeraldHammer() {
         super(ModToolTiers.EMERALD, new Item.Properties()
                 .stacksTo(1)
                 .durability(ModToolTiers.EMERALD.getUses())
-                .rarity(ModRarities.ModRarity.EPIC.getRarity())
-                .fireResistant());
+                .rarity(ModRarity.EPIC.getRarity())
+                .fireResistant()
+                .attributes(createAttributes()));
     }
 
-    @Override
-    public @NotNull Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot slot) {
-        Multimap<Attribute, AttributeModifier> modifiers = HashMultimap.create();
-
-        if (slot == EquipmentSlot.MAINHAND) {
-            modifiers.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", ATTACK_DAMAGE, AttributeModifier.Operation.ADDITION));
-            modifiers.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", ATTACK_SPEED, AttributeModifier.Operation.ADDITION));
-        }
-
-        return modifiers;
+    private static ItemAttributeModifiers createAttributes() {
+        return ItemAttributeModifiers.builder()
+                .add(Attributes.ATTACK_DAMAGE,
+                        new AttributeModifier(BASE_ATTACK_DAMAGE_ID, ATTACK_DAMAGE, AttributeModifier.Operation.ADD_VALUE),
+                        EquipmentSlotGroup.MAINHAND)
+                .add(Attributes.ATTACK_SPEED,
+                        new AttributeModifier(BASE_ATTACK_SPEED_ID, ATTACK_SPEED, AttributeModifier.Operation.ADD_VALUE),
+                        EquipmentSlotGroup.MAINHAND)
+                .build();
     }
 }

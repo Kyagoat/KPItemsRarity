@@ -1,0 +1,13 @@
+{
+  "attribute": "itemsrarity:life_steal",
+  "operation": "add_value",
+  "scale": 0.01,
+  "format": "percent",
+  "color": "#E07B8C",
+  "category": "combat",
+  "order": 35,
+  "rune_power": 1,
+  "exo": false,
+  "weight": 3,
+  "legacy": true
+}

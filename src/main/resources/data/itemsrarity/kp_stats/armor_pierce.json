@@ -1,0 +1,13 @@
+{
+  "attribute": "itemsrarity:armor_pierce",
+  "operation": "add_value",
+  "scale": 1,
+  "format": "int",
+  "color": "#7B94E0",
+  "category": "combat",
+  "order": 30,
+  "rune_power": 1,
+  "exo": false,
+  "weight": 1,
+  "legacy": true
+}

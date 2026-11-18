@@ -1,0 +1,26 @@
+{
+  "bonuses": {
+    "2": {
+      "strength": 2,
+      "fire_resistance": 8
+    },
+    "3": {
+      "strength": 5,
+      "life_steal": 1,
+      "fire_resistance": 18,
+      "vitality": 1
+    },
+    "4": {
+      "strength": 7,
+      "life_steal": 1,
+      "fire_resistance": 28,
+      "vitality": 1
+    },
+    "5": {
+      "strength": 10,
+      "life_steal": 2,
+      "fire_resistance": 40,
+      "vitality": 2
+    }
+  }
+}

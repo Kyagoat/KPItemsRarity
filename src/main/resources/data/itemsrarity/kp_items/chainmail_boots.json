@@ -1,0 +1,22 @@
+{
+  "items": [
+    "minecraft:chainmail_boots"
+  ],
+  "tier": 2,
+  "rarity": "common",
+  "set": "itemsrarity:eclaireur",
+  "stats": {
+    "agility": [
+      3,
+      3
+    ],
+    "critical": [
+      1,
+      3
+    ],
+    "vitality": [
+      -1,
+      0
+    ]
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "items": [
+    "minecraft:rabbit_foot"
+  ],
+  "runes": [
+    {
+      "stat": "luck",
+      "power": 1,
+      "chance": 0.35,
+      "count": 1
+    },
+    {
+      "stat": "agility",
+      "power": 1,
+      "chance": 0.4,
+      "count": 1
+    }
+  ]
+}

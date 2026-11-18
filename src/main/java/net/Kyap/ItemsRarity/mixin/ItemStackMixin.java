@@ -1,6 +1,7 @@
 package net.Kyap.ItemsRarity.mixin;
 
-import net.Kyap.ItemsRarity.util.ModRarities;
+import net.Kyap.ItemsRarity.component.ModDataComponents;
+import net.Kyap.ItemsRarity.util.ModRarities.ModRarity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -8,30 +9,23 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+/**
+ * La rareté du mod remplace la rareté vanilla (couleur du nom, styles Obscure Tooltips).
+ * On n'utilise pas le composant vanilla minecraft:rarity car le jeu "monte" la rareté des objets
+ * enchantés (commun -> rare), ce qui fausserait l'affichage.
+ * Appelé très souvent (à chaque rendu de tooltip) : pas de log ici !
+ */
 @Mixin(ItemStack.class)
-public class ItemStackMixin {
+public abstract class ItemStackMixin {
 
     @Inject(method = "getRarity", at = @At("HEAD"), cancellable = true)
-    private void onGetRarity(CallbackInfoReturnable<Rarity> cir) {
-        ItemStack stack = (ItemStack)(Object)this;
-
-        if (stack.hasTag()) {
-            if (stack.hasTag()) {
-                assert stack.getTag() != null;
-                if (stack.getTag().contains("custom_rarity")) {
-                    String rarityId = stack.getTag().getString("custom_rarity").toLowerCase();
-                    Rarity rarity = switch (rarityId) {
-                        case "uncommon" -> Rarity.UNCOMMON;
-                        case "rare" -> Rarity.RARE;
-                        case "epic" -> Rarity.EPIC;
-                        case "legendary" -> ModRarities.ModRarity.LEGENDARY.getRarity();
-                        case "mythic" -> ModRarities.ModRarity.MYTHIC.getRarity();
-                        default -> Rarity.COMMON;
-                    };
-
-                    cir.setReturnValue(rarity);
-                }
-            }
+    private void itemsrarity$getRarity(CallbackInfoReturnable<Rarity> cir) {
+        ItemStack stack = (ItemStack) (Object) this;
+        ModRarity rarity = stack.get(ModDataComponents.RARITY);
+        // Sans jets : rareté choisie par les fichiers kp_rarity (matériaux, objets des autres mods)
+        if (rarity == null) rarity = net.Kyap.ItemsRarity.util.RarityOverrides.get(stack);
+        if (rarity != null) {
+            cir.setReturnValue(rarity.getRarity());
         }
     }
 }

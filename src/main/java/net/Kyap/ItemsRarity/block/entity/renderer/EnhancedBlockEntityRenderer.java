@@ -10,48 +10,37 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
+/** Affiche la ressource, l'équipement et le matériau posés sur l'enclume. */
 public class EnhancedBlockEntityRenderer implements BlockEntityRenderer<EnhancedAnvilBlockEntity> {
 
     public EnhancedBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
     }
 
     @Override
-    public void render(EnhancedAnvilBlockEntity pBlockEntity, float pPartialTick, @NotNull PoseStack pPoseStack, @NotNull MultiBufferSource pBuffer, int pPackedLight, int pPackedOverlay) {
+    public void render(EnhancedAnvilBlockEntity anvil, float partialTick, PoseStack poseStack, MultiBufferSource buffer,
+                       int packedLight, int packedOverlay) {
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
+        var handler = anvil.getItemHandler();
 
-        ItemStack resourceItem = pBlockEntity.getItemHandler().getStackInSlot(0);
-        if (!resourceItem.isEmpty()) {
-            renderItem(resourceItem, pPoseStack, pBuffer, pPackedLight, pPackedOverlay, itemRenderer,
-                    0.35f, 1.08f, 0.55f, 1f);
-        }
-
-        ItemStack gearItem = pBlockEntity.getItemHandler().getStackInSlot(1);
-        if (!gearItem.isEmpty()) {
-            renderItem(gearItem, pPoseStack, pBuffer, pPackedLight, pPackedOverlay, itemRenderer,
-                    0.5f, 1.027f, 0.2f, 2f);
-        }
-
-        ItemStack modMaterialItem = pBlockEntity.getItemHandler().getStackInSlot(2);
-        if (!modMaterialItem.isEmpty()) {
-            renderItem(modMaterialItem, pPoseStack, pBuffer, pPackedLight, pPackedOverlay, itemRenderer,
-                    0.76f, 1.08f, 0.3f, 1f);
-        }
+        renderItem(handler.getStackInSlot(EnhancedAnvilBlockEntity.RESOURCE_SLOT), anvil, poseStack, buffer, packedLight, packedOverlay,
+                itemRenderer, 0.35f, 1.08f, 0.55f, 1f);
+        renderItem(handler.getStackInSlot(EnhancedAnvilBlockEntity.GEAR_SLOT), anvil, poseStack, buffer, packedLight, packedOverlay,
+                itemRenderer, 0.5f, 1.027f, 0.2f, 2f);
+        renderItem(handler.getStackInSlot(EnhancedAnvilBlockEntity.MOD_MATERIAL_SLOT), anvil, poseStack, buffer, packedLight, packedOverlay,
+                itemRenderer, 0.76f, 1.08f, 0.3f, 1f);
     }
 
-    /**
-     * Rendu standard : Item posé à plat sur l'enclume
-     */
-    private void renderItem(ItemStack itemStack, PoseStack poseStack, MultiBufferSource buffer,
+    /** Objet posé à plat sur l'enclume. */
+    private void renderItem(ItemStack stack, EnhancedAnvilBlockEntity anvil, PoseStack poseStack, MultiBufferSource buffer,
                             int packedLight, int packedOverlay, ItemRenderer itemRenderer,
                             float x, float y, float z, float scale) {
+        if (stack.isEmpty()) return;
         poseStack.pushPose();
         poseStack.translate(x, y, z);
         poseStack.mulPose(Axis.XP.rotationDegrees(90.0f));
         poseStack.scale(scale, scale, scale);
-        itemRenderer.renderStatic(itemStack, ItemDisplayContext.GROUND, packedLight, packedOverlay, poseStack, buffer, null, 0);
+        itemRenderer.renderStatic(stack, ItemDisplayContext.GROUND, packedLight, packedOverlay, poseStack, buffer, anvil.getLevel(), 0);
         poseStack.popPose();
     }
-
 }

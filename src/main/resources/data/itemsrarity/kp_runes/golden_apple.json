@@ -1,0 +1,19 @@
+{
+  "items": [
+    "minecraft:golden_apple"
+  ],
+  "runes": [
+    {
+      "stat": "vitality",
+      "power": 1,
+      "chance": 0.8,
+      "count": 1
+    },
+    {
+      "stat": "healing",
+      "power": 1,
+      "chance": 0.8,
+      "count": 1
+    }
+  ]
+}

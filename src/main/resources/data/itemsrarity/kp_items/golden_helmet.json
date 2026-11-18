@@ -1,0 +1,22 @@
+{
+  "items": [
+    "minecraft:golden_helmet"
+  ],
+  "tier": 2,
+  "rarity": "common",
+  "set": "itemsrarity:orpailleur",
+  "stats": {
+    "wisdom": [
+      6,
+      13
+    ],
+    "luck": [
+      0,
+      1
+    ],
+    "resistance": [
+      -1,
+      0
+    ]
+  }
+}

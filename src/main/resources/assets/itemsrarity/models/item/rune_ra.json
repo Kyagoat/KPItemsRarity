@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "itemsrarity:item/rune_ra",
+    "layer1": "itemsrarity:item/rune_glyph"
+  }
+}

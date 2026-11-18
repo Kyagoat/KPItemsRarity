@@ -1,0 +1,13 @@
+{
+  "items": [
+    "minecraft:amethyst_shard"
+  ],
+  "runes": [
+    {
+      "stat": "critical",
+      "power": 1,
+      "chance": 0.25,
+      "count": 1
+    }
+  ]
+}

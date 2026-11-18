@@ -1,0 +1,12 @@
+{
+  "attribute": "minecraft:generic.safe_fall_distance",
+  "operation": "add_value",
+  "scale": 1,
+  "format": "int",
+  "color": "#7BE0C7",
+  "category": "mobility",
+  "order": 220,
+  "rune_power": 1,
+  "exo": false,
+  "weight": 0.5
+}

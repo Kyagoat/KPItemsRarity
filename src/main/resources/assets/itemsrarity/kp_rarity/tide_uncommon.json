@@ -1,0 +1,18 @@
+{
+  "rarity": "uncommon",
+  "items": [
+    "tide:iron_fishing_rod",
+    "tide:golden_fishing_rod",
+    "tide:iron_line",
+    "tide:golden_line",
+    "tide:lucky_bait",
+    "tide:magnetic_bait",
+    "tide:fish_finder",
+    "tide:climate_gauge",
+    "tide:depth_meter",
+    "tide:pocket_watch",
+    "tide:fishing_journal",
+    "tide:lavaproof_hook",
+    "tide:permafrost_hook"
+  ]
+}

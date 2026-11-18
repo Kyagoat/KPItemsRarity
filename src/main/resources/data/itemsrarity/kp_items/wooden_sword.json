@@ -1,0 +1,10 @@
+{
+  "items": ["minecraft:wooden_sword"],
+  "tier": 1,
+  "rarity": "common",
+  "stats": {
+    "damage": [3, 5],
+    "strength": [1, 3],
+    "critical": [1, 2]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "attribute": "minecraft:generic.luck",
+  "operation": "add_value",
+  "scale": 1,
+  "format": "int",
+  "color": "#7BE0A5",
+  "category": "utility",
+  "order": 500,
+  "rune_power": 1,
+  "exo": true,
+  "weight": 4
+}

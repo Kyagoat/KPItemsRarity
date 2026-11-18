@@ -1,0 +1,11 @@
+{
+  "items": ["minecraft:iron_sword"],
+  "tier": 2,
+  "rarity": "common",
+  "stats": {
+    "damage": [5, 7],
+    "strength": [3, 5],
+    "critical": [1, 2],
+    "critical_damage": [5, 10]
+  }
+}

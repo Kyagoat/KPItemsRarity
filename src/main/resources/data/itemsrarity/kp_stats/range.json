@@ -1,0 +1,13 @@
+{
+  "attribute": "minecraft:player.entity_interaction_range",
+  "operation": "add_value",
+  "scale": 0.1,
+  "format": "tenths",
+  "color": "#7BE0D8",
+  "category": "combat",
+  "order": 45,
+  "rune_power": 1,
+  "exo": false,
+  "weight": 2,
+  "legacy": true
+}

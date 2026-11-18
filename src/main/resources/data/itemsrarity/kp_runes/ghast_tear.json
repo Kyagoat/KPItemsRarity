@@ -1,0 +1,13 @@
+{
+  "items": [
+    "minecraft:ghast_tear"
+  ],
+  "runes": [
+    {
+      "stat": "healing",
+      "power": 3,
+      "chance": 0.6,
+      "count": 1
+    }
+  ]
+}

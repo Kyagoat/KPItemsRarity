@@ -1,0 +1,13 @@
+{
+  "attribute": "itemsrarity:healing_received",
+  "operation": "add_value",
+  "scale": 0.01,
+  "format": "percent",
+  "color": "#E07BA5",
+  "category": "defense",
+  "order": 118,
+  "rune_power": 1,
+  "exo": true,
+  "weight": 0.6,
+  "display": "total"
+}

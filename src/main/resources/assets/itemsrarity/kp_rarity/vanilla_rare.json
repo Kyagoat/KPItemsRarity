@@ -1,0 +1,30 @@
+{
+  "rarity": "rare",
+  "items": [
+    "minecraft:diamond",
+    "minecraft:diamond_block",
+    "minecraft:echo_shard",
+    "minecraft:ancient_debris",
+    "minecraft:netherite_scrap",
+    "minecraft:shulker_shell",
+    "minecraft:heart_of_the_sea",
+    "minecraft:dragon_breath",
+    "minecraft:trident",
+    "minecraft:conduit",
+    "minecraft:wither_skeleton_skull",
+    "minecraft:recovery_compass",
+    "minecraft:disc_fragment_5",
+    "minecraft:heavy_core",
+    "minecraft:ominous_trial_key",
+    "minecraft:ominous_bottle",
+    "minecraft:sniffer_egg",
+    "minecraft:music_disc_pigstep",
+    "minecraft:music_disc_otherside",
+    "minecraft:music_disc_5",
+    "minecraft:music_disc_relic",
+    "minecraft:music_disc_creator",
+    "minecraft:netherite_upgrade_smithing_template",
+    "minecraft:sentry_armor_trim_smithing_template",
+    "minecraft:wild_armor_trim_smithing_template"
+  ]
+}

@@ -3,22 +3,36 @@ package net.Kyap.ItemsRarity.block.entity;
 import net.Kyap.ItemsRarity.ItemsRarity;
 import net.Kyap.ItemsRarity.block.ModBlocks;
 import net.Kyap.ItemsRarity.block.entity.custom.EnhancedAnvilBlockEntity;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
-public class ModBlockEntities {
+@EventBusSubscriber(modid = ItemsRarity.MOD_ID)
+public final class ModBlockEntities {
+    private ModBlockEntities() {}
+
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
-            DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, ItemsRarity.MOD_ID);
+            DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, ItemsRarity.MOD_ID);
 
-    public static final RegistryObject<BlockEntityType<EnhancedAnvilBlockEntity>> ENHANCED_ANVIL_BE =
+    @SuppressWarnings("DataFlowIssue") // build(null) est la norme pour les block entities sans DataFixer
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<EnhancedAnvilBlockEntity>> ENHANCED_ANVIL_BE =
             BLOCK_ENTITIES.register("enhanced_anvil_be", () ->
-                    BlockEntityType.Builder.of(EnhancedAnvilBlockEntity::new,
-                            ModBlocks.ENHANCED_ANVIL_BLOCK.get()).build(null));
+                    BlockEntityType.Builder.of(EnhancedAnvilBlockEntity::new, ModBlocks.ENHANCED_ANVIL_BLOCK.get()).build(null));
 
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);
+    }
+
+    /** Remplace getCapability/LazyOptional : expose l'inventaire aux hoppers, tuyaux Create, etc. */
+    @SubscribeEvent
+    public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ENHANCED_ANVIL_BE.get(),
+                (anvil, side) -> anvil.getItemHandler());
     }
 }

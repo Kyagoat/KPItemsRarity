@@ -1,0 +1,19 @@
+{
+  "items": [
+    "minecraft:phantom_membrane"
+  ],
+  "runes": [
+    {
+      "stat": "fall",
+      "power": 1,
+      "chance": 0.6,
+      "count": 1
+    },
+    {
+      "stat": "jump",
+      "power": 1,
+      "chance": 0.4,
+      "count": 1
+    }
+  ]
+}
