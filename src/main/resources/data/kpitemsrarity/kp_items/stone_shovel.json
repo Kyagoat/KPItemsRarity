@@ -1,0 +1,8 @@
+{
+  "items": ["minecraft:stone_shovel"],
+  "tier": 1,
+  "rarity": "common",
+  "stats": {
+    "harvest": [6, 10]
+  }
+}

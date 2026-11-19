@@ -1,0 +1,26 @@
+{
+  "items": [
+    "minecraft:chainmail_leggings"
+  ],
+  "tier": 2,
+  "rarity": "common",
+  "set": "kpitemsrarity:eclaireur",
+  "stats": {
+    "agility": [
+      1,
+      2
+    ],
+    "critical": [
+      1,
+      3
+    ],
+    "critical_damage": [
+      6,
+      13
+    ],
+    "vitality": [
+      -1,
+      0
+    ]
+  }
+}

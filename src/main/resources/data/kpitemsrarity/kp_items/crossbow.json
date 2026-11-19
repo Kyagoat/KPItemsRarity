@@ -1,0 +1,22 @@
+{
+  "items": [
+    "minecraft:crossbow"
+  ],
+  "tier": 2,
+  "rarity": "common",
+  "set": "kpitemsrarity:eclaireur",
+  "stats": {
+    "arrow_damage": [
+      6,
+      10
+    ],
+    "critical": [
+      1,
+      4
+    ],
+    "vitality": [
+      -1,
+      0
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "attribute": "minecraft:generic.knockback_resistance",
+  "operation": "add_value",
+  "scale": 0.01,
+  "format": "percent",
+  "color": "#947BE0",
+  "category": "defense",
+  "order": 115,
+  "rune_power": 1,
+  "exo": false,
+  "weight": 0.25
+}

@@ -1,0 +1,26 @@
+{
+  "items": [
+    "minecraft:netherite_chestplate"
+  ],
+  "tier": 4,
+  "rarity": "common",
+  "set": "kpitemsrarity:nether_lord",
+  "stats": {
+    "vitality": [
+      2,
+      3
+    ],
+    "life_steal": [
+      0,
+      1
+    ],
+    "strength": [
+      2,
+      5
+    ],
+    "healing": [
+      -8,
+      -3
+    ]
+  }
+}

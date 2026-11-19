@@ -1,0 +1,26 @@
+{
+  "items": [
+    "minecraft:golden_chestplate"
+  ],
+  "tier": 2,
+  "rarity": "common",
+  "set": "kpitemsrarity:orpailleur",
+  "stats": {
+    "vitality": [
+      0,
+      1
+    ],
+    "luck": [
+      0,
+      1
+    ],
+    "wisdom": [
+      3,
+      5
+    ],
+    "resistance": [
+      -1,
+      0
+    ]
+  }
+}

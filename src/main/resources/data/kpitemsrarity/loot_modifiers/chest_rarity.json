@@ -1,0 +1,8 @@
+{
+  "type": "kpitemsrarity:apply_rarity",
+  "conditions": [],
+  "table_prefixes": [
+    "chests/",
+    "gameplay/fishing"
+  ]
+}

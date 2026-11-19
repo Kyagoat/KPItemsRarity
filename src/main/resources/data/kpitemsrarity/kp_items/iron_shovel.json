@@ -1,0 +1,9 @@
+{
+  "items": ["minecraft:iron_shovel"],
+  "tier": 2,
+  "rarity": "common",
+  "stats": {
+    "harvest": [10, 14],
+    "agility": [0, 1]
+  }
+}

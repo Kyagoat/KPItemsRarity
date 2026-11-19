@@ -1,0 +1,12 @@
+{
+  "attribute": "minecraft:generic.armor",
+  "operation": "add_value",
+  "scale": 1,
+  "format": "int",
+  "color": "#7BA5E0",
+  "category": "defense",
+  "order": 110,
+  "rune_power": 1,
+  "exo": false,
+  "weight": 4
+}

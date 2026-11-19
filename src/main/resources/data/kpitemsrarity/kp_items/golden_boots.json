@@ -1,0 +1,26 @@
+{
+  "items": [
+    "minecraft:golden_boots"
+  ],
+  "tier": 2,
+  "rarity": "common",
+  "set": "kpitemsrarity:orpailleur",
+  "stats": {
+    "agility": [
+      1,
+      2
+    ],
+    "wisdom": [
+      5,
+      13
+    ],
+    "fall": [
+      0,
+      3
+    ],
+    "resistance": [
+      -1,
+      0
+    ]
+  }
+}

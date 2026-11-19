@@ -1,0 +1,22 @@
+{
+  "items": [
+    "minecraft:diamond_boots"
+  ],
+  "tier": 3,
+  "rarity": "common",
+  "set": "kpitemsrarity:champion",
+  "stats": {
+    "agility": [
+      2,
+      3
+    ],
+    "vitality": [
+      0,
+      1
+    ],
+    "fall": [
+      2,
+      4
+    ]
+  }
+}

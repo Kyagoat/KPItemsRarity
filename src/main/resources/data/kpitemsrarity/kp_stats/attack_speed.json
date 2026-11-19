@@ -1,0 +1,12 @@
+{
+  "attribute": "minecraft:generic.attack_speed",
+  "operation": "add_multiplied_base",
+  "scale": 0.01,
+  "format": "percent",
+  "color": "#D6E07B",
+  "category": "combat",
+  "order": 25,
+  "rune_power": 1,
+  "exo": false,
+  "weight": 1
+}

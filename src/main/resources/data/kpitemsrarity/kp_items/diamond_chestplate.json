@@ -1,0 +1,22 @@
+{
+  "items": [
+    "minecraft:diamond_chestplate"
+  ],
+  "tier": 3,
+  "rarity": "common",
+  "set": "kpitemsrarity:champion",
+  "stats": {
+    "vitality": [
+      3,
+      4
+    ],
+    "knockback_resistance": [
+      3,
+      5
+    ],
+    "agility": [
+      -3,
+      -1
+    ]
+  }
+}

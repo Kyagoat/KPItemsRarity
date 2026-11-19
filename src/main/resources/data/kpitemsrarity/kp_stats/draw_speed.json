@@ -1,0 +1,12 @@
+{
+  "attribute": "kpitemsrarity:draw_speed",
+  "operation": "add_value",
+  "scale": 0.01,
+  "format": "percent",
+  "color": "#B8E07B",
+  "category": "combat",
+  "order": 41,
+  "rune_power": 1,
+  "exo": false,
+  "weight": 0.5
+}

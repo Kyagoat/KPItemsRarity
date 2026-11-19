@@ -1,0 +1,13 @@
+{
+  "attribute": "kpitemsrarity:dodge_chance",
+  "operation": "add_value",
+  "scale": 0.01,
+  "format": "percent",
+  "color": "#7BE08C",
+  "category": "defense",
+  "order": 120,
+  "rune_power": 1,
+  "exo": false,
+  "weight": 1.5,
+  "legacy": true
+}

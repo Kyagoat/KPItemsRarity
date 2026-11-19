@@ -1,0 +1,22 @@
+{
+  "items": [
+    "minecraft:leather_chestplate"
+  ],
+  "tier": 1,
+  "rarity": "common",
+  "set": "kpitemsrarity:rodeur",
+  "stats": {
+    "arrow_damage": [
+      3,
+      6
+    ],
+    "draw_speed": [
+      0,
+      2
+    ],
+    "vitality": [
+      -1,
+      0
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "attribute": "minecraft:generic.water_movement_efficiency",
+  "operation": "add_value",
+  "scale": 0.01,
+  "format": "percent",
+  "color": "#7BD8E0",
+  "category": "mobility",
+  "order": 230,
+  "rune_power": 1,
+  "exo": false,
+  "weight": 0.25
+}

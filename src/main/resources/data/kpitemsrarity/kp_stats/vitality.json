@@ -1,0 +1,12 @@
+{
+  "attribute": "minecraft:generic.max_health",
+  "operation": "add_value",
+  "scale": 1,
+  "format": "int",
+  "color": "#E07B7B",
+  "category": "defense",
+  "order": 100,
+  "rune_power": 1,
+  "exo": true,
+  "weight": 3
+}

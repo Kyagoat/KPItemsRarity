@@ -1,0 +1,21 @@
+{
+  "rarity": "epic",
+  "items": [
+    "minecraft:netherite_ingot",
+    "minecraft:netherite_block",
+    "minecraft:elytra",
+    "minecraft:totem_of_undying",
+    "minecraft:enchanted_golden_apple",
+    "minecraft:shulker_box",
+    "minecraft:end_crystal",
+    "minecraft:mace",
+    "minecraft:wolf_armor",
+    "minecraft:silence_armor_trim_smithing_template",
+    "minecraft:ward_armor_trim_smithing_template",
+    "minecraft:eye_armor_trim_smithing_template",
+    "minecraft:vex_armor_trim_smithing_template",
+    "minecraft:spire_armor_trim_smithing_template",
+    "minecraft:flow_armor_trim_smithing_template",
+    "minecraft:bolt_armor_trim_smithing_template"
+  ]
+}

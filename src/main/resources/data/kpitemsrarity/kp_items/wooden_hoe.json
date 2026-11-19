@@ -1,0 +1,9 @@
+{
+  "items": ["minecraft:wooden_hoe"],
+  "tier": 1,
+  "rarity": "common",
+  "stats": {
+    "wisdom": [6, 12],
+    "harvest": [0, 3]
+  }
+}

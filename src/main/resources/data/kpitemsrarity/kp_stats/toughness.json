@@ -1,0 +1,12 @@
+{
+  "attribute": "minecraft:generic.armor_toughness",
+  "operation": "add_value",
+  "scale": 1,
+  "format": "int",
+  "color": "#7B83E0",
+  "category": "defense",
+  "order": 111,
+  "rune_power": 1,
+  "exo": false,
+  "weight": 2
+}

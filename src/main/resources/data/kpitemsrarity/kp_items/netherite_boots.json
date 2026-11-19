@@ -1,0 +1,26 @@
+{
+  "items": [
+    "minecraft:netherite_boots"
+  ],
+  "tier": 4,
+  "rarity": "common",
+  "set": "kpitemsrarity:nether_lord",
+  "stats": {
+    "vitality": [
+      1,
+      2
+    ],
+    "fire_resistance": [
+      18,
+      36
+    ],
+    "agility": [
+      1,
+      2
+    ],
+    "healing": [
+      -8,
+      -3
+    ]
+  }
+}

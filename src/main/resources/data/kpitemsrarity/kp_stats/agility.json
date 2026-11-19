@@ -1,0 +1,12 @@
+{
+  "attribute": "minecraft:generic.movement_speed",
+  "operation": "add_multiplied_base",
+  "scale": 0.01,
+  "format": "percent",
+  "color": "#7BE07B",
+  "category": "mobility",
+  "order": 200,
+  "rune_power": 1,
+  "exo": true,
+  "weight": 1.5
+}

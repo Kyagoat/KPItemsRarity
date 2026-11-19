@@ -1,0 +1,14 @@
+{
+  "attribute": "minecraft:generic.attack_damage",
+  "operation": "add_value",
+  "scale": 1,
+  "format": "int",
+  "color": "#E8E8E8",
+  "category": "combat",
+  "order": 1,
+  "rune_power": 0,
+  "exo": false,
+  "weight": 0,
+  "base": true,
+  "offset": -1.0
+}

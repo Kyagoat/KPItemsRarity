@@ -1,0 +1,13 @@
+{
+  "attribute": "irons_spellbooks:spell_power",
+  "operation": "add_multiplied_base",
+  "scale": 0.01,
+  "format": "percent",
+  "color": "#D87BE0",
+  "category": "magic",
+  "order": 400,
+  "rune_power": 1,
+  "exo": false,
+  "weight": 1,
+  "legacy": true
+}

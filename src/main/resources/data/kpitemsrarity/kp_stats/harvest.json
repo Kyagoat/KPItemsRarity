@@ -1,0 +1,12 @@
+{
+  "attribute": "minecraft:player.block_break_speed",
+  "operation": "add_multiplied_base",
+  "scale": 0.01,
+  "format": "percent",
+  "color": "#E0BE7B",
+  "category": "harvest",
+  "order": 300,
+  "rune_power": 1,
+  "exo": false,
+  "weight": 0.5
+}

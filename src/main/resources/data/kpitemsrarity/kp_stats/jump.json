@@ -1,0 +1,12 @@
+{
+  "attribute": "minecraft:generic.jump_strength",
+  "operation": "add_multiplied_base",
+  "scale": 0.01,
+  "format": "percent",
+  "color": "#9DE07B",
+  "category": "mobility",
+  "order": 210,
+  "rune_power": 1,
+  "exo": false,
+  "weight": 0.25
+}

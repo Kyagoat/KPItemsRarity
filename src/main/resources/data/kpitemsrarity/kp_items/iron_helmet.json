@@ -1,0 +1,22 @@
+{
+  "items": [
+    "minecraft:iron_helmet"
+  ],
+  "tier": 2,
+  "rarity": "common",
+  "set": "kpitemsrarity:iron_guard",
+  "stats": {
+    "vitality": [
+      1,
+      2
+    ],
+    "knockback_resistance": [
+      0,
+      5
+    ],
+    "agility": [
+      -2,
+      -1
+    ]
+  }
+}

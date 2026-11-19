@@ -1,0 +1,26 @@
+{
+  "rarity": "uncommon",
+  "items": [
+    "create:brass_ingot",
+    "create:brass_sheet",
+    "create:electron_tube",
+    "create:rose_quartz",
+    "create:polished_rose_quartz",
+    "create:goggles",
+    "create:extendo_grip",
+    "create:linked_controller",
+    "create:copper_diving_helmet",
+    "create:copper_diving_boots",
+    "create:copper_backtank",
+    "create:copper_backtank_placeable",
+    "create:potato_cannon",
+    "create:wand_of_symmetry",
+    "create:blaze_burner",
+    "create:blaze_cake",
+    "create:experience_nugget",
+    "create:mechanical_crafter",
+    "create:steam_engine",
+    "create:mechanical_arm",
+    "create:schematic_and_quill"
+  ]
+}

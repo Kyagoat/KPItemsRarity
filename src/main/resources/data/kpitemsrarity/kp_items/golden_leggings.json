@@ -1,0 +1,22 @@
+{
+  "items": [
+    "minecraft:golden_leggings"
+  ],
+  "tier": 2,
+  "rarity": "common",
+  "set": "kpitemsrarity:orpailleur",
+  "stats": {
+    "harvest": [
+      6,
+      11
+    ],
+    "wisdom": [
+      6,
+      11
+    ],
+    "resistance": [
+      -1,
+      0
+    ]
+  }
+}

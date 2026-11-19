@@ -1,0 +1,22 @@
+{
+  "items": [
+    "minecraft:shield"
+  ],
+  "tier": 2,
+  "rarity": "common",
+  "set": "kpitemsrarity:iron_guard",
+  "stats": {
+    "guard": [
+      7,
+      13
+    ],
+    "endurance": [
+      1,
+      4
+    ],
+    "agility": [
+      -2,
+      -1
+    ]
+  }
+}

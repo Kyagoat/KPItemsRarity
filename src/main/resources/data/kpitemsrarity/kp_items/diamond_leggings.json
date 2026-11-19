@@ -1,0 +1,22 @@
+{
+  "items": [
+    "minecraft:diamond_leggings"
+  ],
+  "tier": 3,
+  "rarity": "common",
+  "set": "kpitemsrarity:champion",
+  "stats": {
+    "strength": [
+      4,
+      9
+    ],
+    "vitality": [
+      0,
+      1
+    ],
+    "agility": [
+      -3,
+      -1
+    ]
+  }
+}

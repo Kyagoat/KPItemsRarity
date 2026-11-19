@@ -1,0 +1,12 @@
+{
+  "items": ["minecraft:netherite_axe"],
+  "tier": 4,
+  "rarity": "common",
+  "stats": {
+    "damage": [9, 11],
+    "strength": [6, 9],
+    "critical_damage": [25, 40],
+    "armor_pierce": [2, 3],
+    "life_steal": [0, 1]
+  }
+}

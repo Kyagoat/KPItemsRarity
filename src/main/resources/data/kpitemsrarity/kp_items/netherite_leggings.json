@@ -1,0 +1,26 @@
+{
+  "items": [
+    "minecraft:netherite_leggings"
+  ],
+  "tier": 4,
+  "rarity": "common",
+  "set": "kpitemsrarity:nether_lord",
+  "stats": {
+    "strength": [
+      5,
+      8
+    ],
+    "vitality": [
+      1,
+      2
+    ],
+    "knockback_resistance": [
+      5,
+      10
+    ],
+    "healing": [
+      -8,
+      -3
+    ]
+  }
+}

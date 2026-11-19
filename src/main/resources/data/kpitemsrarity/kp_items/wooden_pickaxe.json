@@ -1,0 +1,9 @@
+{
+  "items": ["minecraft:wooden_pickaxe"],
+  "tier": 1,
+  "rarity": "common",
+  "stats": {
+    "harvest": [4, 7],
+    "wisdom": [2, 5]
+  }
+}
