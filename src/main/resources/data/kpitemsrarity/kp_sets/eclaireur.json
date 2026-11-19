@@ -1,0 +1,24 @@
+{
+  "bonuses": {
+    "2": {
+      "critical": 1,
+      "agility": 1,
+      "critical_damage": 4
+    },
+    "3": {
+      "critical": 2,
+      "agility": 1,
+      "critical_damage": 9
+    },
+    "4": {
+      "critical": 4,
+      "agility": 2,
+      "critical_damage": 14
+    },
+    "5": {
+      "critical": 5,
+      "agility": 3,
+      "critical_damage": 20
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "bonuses": {
+    "2": {
+      "wisdom": 2,
+      "harvest": 1
+    },
+    "3": {
+      "luck": 1,
+      "wisdom": 5,
+      "harvest": 2
+    },
+    "4": {
+      "luck": 1,
+      "wisdom": 8,
+      "harvest": 4
+    },
+    "5": {
+      "luck": 2,
+      "wisdom": 12,
+      "harvest": 5
+    }
+  }
+}
