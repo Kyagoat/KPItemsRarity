@@ -23,3 +23,13 @@ run
 
 # Files from Forge MDK
 forge*changelog.txt
+
+# Jars de mods optionnels pour compiler (Cinematic Interactions...)
+libs/
+
+# Fichiers mis de côté pendant les mises à jour (à supprimer à la main)
+_to_delete/
+
+# Fichiers des synchronisations
+.sync/
+r_update*.tar

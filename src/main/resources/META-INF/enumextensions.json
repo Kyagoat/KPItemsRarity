@@ -1,0 +1,22 @@
+{
+  "entries": [
+    {
+      "enum": "net/minecraft/world/item/Rarity",
+      "name": "KPITEMSRARITY_LEGENDARY",
+      "constructor": "(ILjava/lang/String;Ljava/util/function/UnaryOperator;)V",
+      "parameters": {
+        "class": "net/Kyap/KPItemsRarity/util/RarityEnumParams",
+        "method": "legendary"
+      }
+    },
+    {
+      "enum": "net/minecraft/world/item/Rarity",
+      "name": "KPITEMSRARITY_MYTHIC",
+      "constructor": "(ILjava/lang/String;Ljava/util/function/UnaryOperator;)V",
+      "parameters": {
+        "class": "net/Kyap/KPItemsRarity/util/RarityEnumParams",
+        "method": "mythic"
+      }
+    }
+  ]
+}
