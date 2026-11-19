@@ -1,0 +1,10 @@
+{
+  "panel": "kpitemsrarity:mythic",
+  "frame": "kpitemsrarity:mythic",
+  "icon": "obscure_tooltips:default",
+  "effects": [
+    "kpitemsrarity:mythic_ray_glow",
+    "kpitemsrarity:mythic_icon_particles",
+    "obscure_tooltips:curse_particles"
+  ]
+}

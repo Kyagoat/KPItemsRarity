@@ -1,0 +1,9 @@
+{
+  "panel": "kpitemsrarity:epic",
+  "frame": "kpitemsrarity:epic",
+  "icon": "obscure_tooltips:default",
+  "effects": [
+    "kpitemsrarity:epic_ray_glow",
+    "kpitemsrarity:epic_icon_particles"
+  ]
+}
