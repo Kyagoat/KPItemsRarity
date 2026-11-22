@@ -25,7 +25,7 @@ import java.util.function.BiConsumer;
 /**
  * Transforme les jets (composant kpitemsrarity:stats) en vrais modificateurs d'attributs.
  * ID stable par stat ET par emplacement : kpitemsrarity:stat/<stat>/<emplacement>.
- * Le tooltip vanilla de ces modificateurs est masqué (TooltipHandler affiche les jets à la place).
+ * Le bloc vanilla des attributs est masqué : l'infobulle RPG affiche les jets à la place (client/tooltip).
  */
 @EventBusSubscriber(modid = KPItemsRarity.MOD_ID)
 public final class AttributeEvents {

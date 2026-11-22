@@ -1,10 +1,7 @@
-package net.Kyap.KPItemsRarity.client.tooltip;
+package net.Kyap.KPItemsRarity.client.tooltip.item;
 
-import net.Kyap.KPItemsRarity.client.tooltip.TooltipModel.Elem;
-import net.Kyap.KPItemsRarity.client.tooltip.TooltipModel.GapElem;
-import net.Kyap.KPItemsRarity.client.tooltip.TooltipModel.PassiveElem;
-import net.Kyap.KPItemsRarity.client.tooltip.TooltipModel.Row;
-import net.Kyap.KPItemsRarity.client.tooltip.TooltipModel.RowElem;
+import net.Kyap.KPItemsRarity.client.tooltip.card.Elem;
+import net.Kyap.KPItemsRarity.client.tooltip.card.RpgFrame;
 import net.Kyap.KPItemsRarity.data.ItemDefinition;
 import net.Kyap.KPItemsRarity.data.PassiveDefinition;
 import net.Kyap.KPItemsRarity.data.RarityData;
@@ -24,21 +21,26 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/** Les conditions d'équipement et les passifs (de l'objet puis de sa panoplie), avec leur état en direct. */
+/**
+ * Les conditions d'équipement ("✔ Armure totale ≤ 8") et les passifs de l'objet puis de sa panoplie, chacun dans
+ * son encadré avec son état en direct : actif, en recharge, en attente (condition pas remplie), inactif.
+ */
 final class PassiveRows {
     private PassiveRows() {}
+
+    private static final int ACTIVE = 0xF2C14E, INACTIVE = 0x9A8A6A, COOLDOWN = 0xF0A040, WAITING = 0xE8D25A;
 
     /** "Condition : Armure totale ≤ 8", en vert si le joueur la remplit, en rouge sinon. */
     static void addConditions(List<Elem> body, @Nullable ItemDefinition def) {
         if (def == null || !def.hasConditions()) return;
         Player player = Minecraft.getInstance().player;
-        body.add(new GapElem(3));
+        body.add(Elem.Gap.SECTION);
         def.conditions.forEach((key, limit) -> {
             boolean ok = player == null || Conditions.met(player, key, limit);
             String shown = limit == Math.rint(limit) ? String.valueOf(limit.longValue()) : String.valueOf(limit);
             Component line = Component.literal(ok ? "✔ " : "✖ ").append(Component.translatable("tooltip.kpitemsrarity.condition." + key, shown))
                     .withStyle(s -> s.withColor(ok ? RpgFrame.POSITIVE : RpgFrame.NEGATIVE));
-            body.add(new RowElem(new Row(line, Component.empty(), 0)));
+            body.add(new Elem.Line(line));
         });
     }
 
@@ -49,7 +51,7 @@ final class PassiveRows {
         Set<String> active = new HashSet<>();
         if (player != null) for (var p : ActivePassives.list(player)) active.add(p.id);
 
-        List<PassiveElem> elems = new ArrayList<>();
+        List<Elem.Passive> elems = new ArrayList<>();
         if (def.passives != null) for (String id : def.passives) addPassive(elems, id, player, active, null);
         SetDefinition set = def.hasSet() ? RarityData.set(def.set) : null;
         if (set != null && set.passives != null) {
@@ -58,18 +60,18 @@ final class PassiveRows {
             });
         }
         if (elems.isEmpty()) return;
-        body.add(new GapElem(3));
+        body.add(Elem.Gap.SECTION);
         body.addAll(elems);
     }
 
-    private static void addPassive(List<PassiveElem> elems, String id, @Nullable Player player, Set<String> active, @Nullable String pieces) {
+    private static void addPassive(List<Elem.Passive> elems, String id, @Nullable Player player, Set<String> active, @Nullable String pieces) {
         PassiveDefinition p = RarityData.passive(id);
         if (p != null) elems.add(passiveElem(p, player, active.contains(id), pieces));
     }
 
-    static PassiveElem passiveElem(PassiveDefinition p, @Nullable Player player,
+    private static Elem.Passive passiveElem(PassiveDefinition p, @Nullable Player player,
                                            boolean on, @Nullable String pieces) {
-        int color = on ? 0xF2C14E : 0x9A8A6A;
+        int color = on ? ACTIVE : INACTIVE;
         MutableComponent name = Component.literal("✧ ").append(p.name()).withStyle(s -> s.withColor(color).withBold(true));
         if (pieces != null) name.append(Component.translatable("tooltip.kpitemsrarity.passive.pieces", pieces)
                 .withStyle(s -> s.withColor(RpgFrame.TEXT_FAINT).withBold(false)));
@@ -78,9 +80,9 @@ final class PassiveRows {
         if (!on) {
             state = Component.translatable("tooltip.kpitemsrarity.passive.inactive").withStyle(s -> s.withColor(RpgFrame.TEXT_FAINT));
         } else if (left > 0) {
-            state = Component.translatable("tooltip.kpitemsrarity.passive.cooldown", left).withStyle(s -> s.withColor(0xF0A040));
+            state = Component.translatable("tooltip.kpitemsrarity.passive.cooldown", left).withStyle(s -> s.withColor(COOLDOWN));
         } else if (player != null && waiting(p, player)) {
-            state = Component.translatable("tooltip.kpitemsrarity.passive.waiting").withStyle(s -> s.withColor(0xE8D25A));
+            state = Component.translatable("tooltip.kpitemsrarity.passive.waiting").withStyle(s -> s.withColor(WAITING));
         } else {
             state = Component.translatable("tooltip.kpitemsrarity.passive.active").withStyle(s -> s.withColor(RpgFrame.POSITIVE));
         }
@@ -91,11 +93,11 @@ final class PassiveRows {
             if (p.cooldown > 0) sb.append(" · cooldown ").append((int) p.cooldown).append(" s");
             formula = Component.literal(sb.toString());
         }
-        return new PassiveElem(name, state, p.description(), formula, color, on);
+        return new Elem.Passive(name, state, p.description(), formula, color, on);
     }
 
     /** Condition du passif pas remplie en ce moment (vie trop haute, hors de l'eau, sous la pluie...). */
-    static boolean waiting(PassiveDefinition p, Player player) {
+    private static boolean waiting(PassiveDefinition p, Player player) {
         return switch (p.effect) {
             case "crit_explosion" -> player.getHealth() > p.num("max_health", 2.0);
             case "life_steal" -> p.num("below_health", 0) > 0 && player.getHealth() > player.getMaxHealth() * p.num("below_health", 0)

@@ -1,6 +1,7 @@
-package net.Kyap.KPItemsRarity.client.tooltip;
+package net.Kyap.KPItemsRarity.client.tooltip.text;
 
 import net.Kyap.KPItemsRarity.KPItemsRarity;
+import net.Kyap.KPItemsRarity.client.tooltip.card.RpgFrame;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
@@ -113,7 +114,7 @@ public final class ItemDescriptions {
         return options[Math.floorMod(h, options.length)].trim();
     }
 
-    /** Catégories automatiques qui donnent une info chiffrée : gardées même quand l'objet a son propre lore. */
+    /** Catégories automatiques qui donnent une info chiffrée : gardées même quand l'objet à son propre lore. */
     private static final Set<String> INFORMATIVE = Set.of("food_effects", "potion", "splash_potion",
             "lingering_potion", "tipped_arrow", "fuel", "music_disc", "bucket");
 
@@ -129,32 +130,82 @@ public final class ItemDescriptions {
         Item item = stack.getItem();
         if (item instanceof SpawnEggItem) return "spawn_egg";
         if (stack.has(DataComponents.JUKEBOX_PLAYABLE)) return "music_disc";
-        if (item instanceof TippedArrowItem) return "tipped_arrow";
-        if (item instanceof LingeringPotionItem) return "lingering_potion";
-        if (item instanceof SplashPotionItem) return "splash_potion";
-        if (item instanceof PotionItem) return "potion";
+        switch (item) {
+            case TippedArrowItem ignored -> {
+                return "tipped_arrow";
+            }
+            case LingeringPotionItem ignored -> {
+                return "lingering_potion";
+            }
+            case SplashPotionItem ignored -> {
+                return "splash_potion";
+            }
+            case PotionItem ignored -> {
+                return "potion";
+            }
+            default -> {
+            }
+        }
         if (stack.has(DataComponents.SUSPICIOUS_STEW_EFFECTS)) return "food_effects";
         FoodProperties food = stack.get(DataComponents.FOOD);
         // Se mange ET sert d'arme (ex. l'espadon de Tide) : une phrase qui le dit, pas juste "poisson".
         if (food != null && (item instanceof SwordItem || item instanceof AxeItem || item instanceof TridentItem || item instanceof MaceItem)) return "edible_weapon";
         if (stack.is(ItemTags.FISHES) || stack.is(RAW_FISH) || stack.is(TIDE_FISH)) return food != null && !food.effects().isEmpty() ? "food_effects" : "fish";
         if (food != null) return food.effects().isEmpty() ? "food" : "food_effects";
-        if (item instanceof AnimalArmorItem animal) return animal.getBodyType() == AnimalArmorItem.BodyType.CANINE ? "wolf_armor" : "horse_armor";
-        if (item instanceof ArmorItem) return "armor";
-        if (item instanceof SwordItem) return "sword";
-        if (item instanceof PickaxeItem) return "pickaxe";
-        if (item instanceof AxeItem) return "axe";
-        if (item instanceof ShovelItem) return "shovel";
-        if (item instanceof HoeItem) return "hoe";
+        switch (item) {
+            case AnimalArmorItem animal -> {
+                return animal.getBodyType() == AnimalArmorItem.BodyType.CANINE ? "wolf_armor" : "horse_armor";
+            }
+            case ArmorItem ignored -> {
+                return "armor";
+            }
+            case SwordItem ignored -> {
+                return "sword";
+            }
+            case PickaxeItem ignored -> {
+                return "pickaxe";
+            }
+            case AxeItem ignored -> {
+                return "axe";
+            }
+            case ShovelItem ignored -> {
+                return "shovel";
+            }
+            case HoeItem ignored -> {
+                return "hoe";
+            }
+            default -> {
+            }
+        }
         if (item instanceof BowItem || item instanceof CrossbowItem) return "ranged";
-        if (item instanceof ArrowItem) return "arrow";
-        if (item instanceof MobBucketItem) return "mob_bucket";
-        if (item instanceof BucketItem bucket) return bucket.content == Fluids.EMPTY ? null : "bucket";
-        if (item instanceof EnchantedBookItem) return "enchanted_book";
-        if (item instanceof SmithingTemplateItem) return "smithing_template";
-        if (item instanceof BannerPatternItem) return "banner_pattern";
-        if (item instanceof DyeItem) return "dye";
-        if (item instanceof BlockItem block) return blockCategory(stack, block);
+        switch (item) {
+            case ArrowItem ignored -> {
+                return "arrow";
+            }
+            case MobBucketItem ignored -> {
+                return "mob_bucket";
+            }
+            case BucketItem bucket -> {
+                return bucket.content == Fluids.EMPTY ? null : "bucket";
+            }
+            case EnchantedBookItem ignored -> {
+                return "enchanted_book";
+            }
+            case SmithingTemplateItem ignored -> {
+                return "smithing_template";
+            }
+            case BannerPatternItem ignored -> {
+                return "banner_pattern";
+            }
+            case DyeItem ignored -> {
+                return "dye";
+            }
+            case BlockItem block -> {
+                return blockCategory(stack, block);
+            }
+            default -> {
+            }
+        }
         if (stack.is(Tags.Items.INGOTS)) return "ingot";
         if (stack.is(Tags.Items.NUGGETS)) return "nugget";
         if (stack.is(Tags.Items.GEMS)) return "gem";
@@ -224,13 +275,13 @@ public final class ItemDescriptions {
             case "name" -> highlighted(stack.getHoverName());
             case "effects" -> effects(effectsOf(stack), item instanceof TippedArrowItem ? 0.125f : 1.0f);
             case "nutrition" -> value(food != null ? String.valueOf(food.nutrition()) : "0");
-            case "saturation" -> value(food != null ? VanillaRows.fmt(food.saturation()) : "0");
+            case "saturation" -> value(food != null ? Texts.number(food.saturation()) : "0");
             case "armor" -> value(item instanceof ArmorItem armor ? String.valueOf(armor.getDefense()) : "0");
             case "durability" -> value(String.valueOf(stack.getMaxDamage()));
             case "mob" -> item instanceof SpawnEggItem egg ? highlighted(egg.getType(stack).getDescription()) : value("?");
             case "song" -> song(stack);
             case "fluid" -> item instanceof BucketItem bucket ? highlighted(bucket.content.getFluidType().getDescription()) : value("?");
-            case "fuel" -> value(VanillaRows.fmt(stack.getBurnTime(RecipeType.SMELTING) / 20.0));
+            case "fuel" -> value(Texts.number(stack.getBurnTime(RecipeType.SMELTING) / 20.0));
             default -> value("{" + var + "}");
         };
     }

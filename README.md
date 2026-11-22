@@ -28,10 +28,10 @@ Iron Guard Set 2/5 · [Left Alt]
 
 ### RPG tooltip
 
-Equipment gets its own tooltip: big item preview, name in the rarity colour, base damage (or armor) in large
-numbers, stat lines with their grey range, enchantments, set, durability. The frame takes the rarity colour and
-pulses for Legendary and Mythic. It replaces Obscure Tooltips for equipment only. Can be turned off in
-`config/kpitemsrarity-client.toml` (`rpgTooltips = false`).
+Every item gets the RPG tooltip (there is no classic tooltip any more): big item preview, name in the rarity
+colour, base damage (or armor) in large numbers, stat lines with their grey range, enchantments, set, passives,
+durability. The frame takes the rarity colour and pulses for Legendary and Mythic. Holding Alt on a set piece shows
+the set card instead. How the code is organised: `src/main/java/net/Kyap/KPItemsRarity/client/tooltip/README.md`.
 
 ### Lore (texts to edit)
 

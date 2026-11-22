@@ -1,4 +1,4 @@
-package net.Kyap.KPItemsRarity.client.tooltip;
+package net.Kyap.KPItemsRarity.client.tooltip.card;
 
 import net.Kyap.KPItemsRarity.util.ModRarities.ModRarity;
 import net.minecraft.Util;

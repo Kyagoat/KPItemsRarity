@@ -1,6 +1,6 @@
 package net.Kyap.KPItemsRarity.client.panel;
 
-import net.Kyap.KPItemsRarity.client.tooltip.RpgFrame;
+import net.Kyap.KPItemsRarity.client.tooltip.card.RpgFrame;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.FormattedCharSequence;

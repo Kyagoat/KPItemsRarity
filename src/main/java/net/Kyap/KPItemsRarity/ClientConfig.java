@@ -8,14 +8,8 @@ public final class ClientConfig {
 
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
-    public static final ModConfigSpec.BooleanValue RPG_TOOLTIPS = BUILDER
-            .comment("Infobulle façon RPG pour tous les objets (grand aperçu de l'objet, dégâts en gros,",
-                     "cadre à la couleur de la rareté). false = infobulle classique avec les lignes du mod.")
-            .define("rpgTooltips", true);
-
     public static final ModConfigSpec.IntValue ICON_SIZE = BUILDER
-            .comment("Taille en pixels de l'aperçu de l'objet dans l'infobulle d'un équipement.",
-                     "Les autres objets utilisent les trois quarts.")
+            .comment("Taille en pixels de l'aperçu de l'objet dans l'infobulle.")
             .defineInRange("iconSize", 24, 16, 96);
 
     public static final ModConfigSpec.BooleanValue ANIMATED_ICON = BUILDER
@@ -51,10 +45,6 @@ public final class ClientConfig {
 
     public static boolean animatedIcon() {
         return !SPEC.isLoaded() || ANIMATED_ICON.get();
-    }
-
-    public static boolean rpgTooltips() {
-        return !SPEC.isLoaded() || RPG_TOOLTIPS.get();
     }
 
     public static int iconSize() {

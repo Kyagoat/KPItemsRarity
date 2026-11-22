@@ -1,7 +1,7 @@
 package net.Kyap.KPItemsRarity.client.panel;
 
 import net.Kyap.KPItemsRarity.KPItemsRarity;
-import net.Kyap.KPItemsRarity.client.tooltip.SetCard;
+import net.Kyap.KPItemsRarity.client.tooltip.setcard.SetCard;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;

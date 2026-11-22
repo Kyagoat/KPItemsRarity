@@ -1,5 +1,6 @@
-package net.Kyap.KPItemsRarity.client.tooltip;
+package net.Kyap.KPItemsRarity.client.tooltip.text;
 
+import net.Kyap.KPItemsRarity.client.tooltip.card.RpgFrame;
 import net.Kyap.KPItemsRarity.data.ItemDefinition;
 import net.Kyap.KPItemsRarity.data.SetDefinition;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -14,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
  * sans toucher au code : assets/kpitemsrarity/lang/fr_fr.json (et en_us.json).
  *
  *   Objet     : "lore.<mod>.<objet>"        ex. "lore.minecraft.iron_sword"
- *   Panoplie  : "lore.set.<mod>.<panoplie>" ex. "lore.set.kpitemsrarity.iron_guard"
+ *   Panoplie  : "lore.set.<mod>.<panoplie>" ex. "lore.set.kpitemsrarity.iron"
  *
  * On peut aussi forcer un texte (ou une autre clé) avec le champ "lore" du JSON de l'objet (kp_items)
  * ou de la panoplie (kp_sets). Pas de clé = pas de lore, rien ne s'affiche.

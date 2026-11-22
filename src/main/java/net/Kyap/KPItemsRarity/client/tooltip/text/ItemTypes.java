@@ -1,4 +1,4 @@
-package net.Kyap.KPItemsRarity.client.tooltip;
+package net.Kyap.KPItemsRarity.client.tooltip.text;
 
 import net.Kyap.KPItemsRarity.data.ItemDefinition;
 import net.Kyap.KPItemsRarity.data.RarityData;
@@ -31,11 +31,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /** Le type d'objet affiché sous le nom ("Épée", "Bague"...) et la rareté des objets hors du mod. */
-final class ItemTypes {
+public final class ItemTypes {
     private ItemTypes() {}
 
     /** Rareté vanilla (ou d'un autre mod) -> couleur du cadre. */
-    static ModRarity fromVanilla(Rarity rarity) {
+    public static ModRarity fromVanilla(Rarity rarity) {
         String name = rarity.name();
         if (name.contains("MYTHIC")) return ModRarity.MYTHIC;
         if (name.contains("LEGENDARY")) return ModRarity.LEGENDARY;
@@ -61,7 +61,7 @@ final class ItemTypes {
             new ByClass(SpawnEggItem.class, "spawn_egg"));
 
     /** "Épée", "Casque", "Bague", "Nourriture"... (clés type.kpitemsrarity.*). */
-    static Component typeName(ItemStack stack) {
+    public static Component typeName(ItemStack stack) {
         return Component.translatable("type.kpitemsrarity." + typeKey(stack));
     }
 

@@ -1,8 +1,12 @@
-package net.Kyap.KPItemsRarity.client.tooltip;
+package net.Kyap.KPItemsRarity.client.tooltip.setcard;
 
-import net.Kyap.KPItemsRarity.ClientConfig;
 import net.Kyap.KPItemsRarity.KPItemsRarity;
 import net.Kyap.KPItemsRarity.client.ShareKey;
+import net.Kyap.KPItemsRarity.client.tooltip.card.Card;
+import net.Kyap.KPItemsRarity.client.tooltip.card.CardRenderer;
+import net.Kyap.KPItemsRarity.client.tooltip.card.CardScroll;
+import net.Kyap.KPItemsRarity.client.tooltip.card.RpgFrame;
+import net.Kyap.KPItemsRarity.client.tooltip.text.ItemTypes;
 import net.Kyap.KPItemsRarity.data.ItemDefinition;
 import net.Kyap.KPItemsRarity.data.RarityData;
 import net.Kyap.KPItemsRarity.data.SetDefinition;
@@ -12,7 +16,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -28,7 +31,8 @@ import java.util.Set;
  *  - la carte REMPLACE l'infobulle (plus rien ne se superpose) ;
  *  - elle reste FIGÉE à sa place tant qu'Alt est maintenu : on peut bouger la souris dessus
  *    et survoler les icônes des pièces pour voir leur nom et si on la porte.
- * Relâcher Alt ferme la carte. Le contenu vient de {@link SetCardContent}, cette classe le place et le dessine.
+ * Relâcher Alt ferme la carte. Le contenu vient de {@link SetCardContent} ; cette classe dessine l'en-tête (titre et
+ * cases des pièces) et confie le reste au moteur commun des fenêtres ({@link CardRenderer}), comme l'infobulle d'objet.
  *
  *   ┌───────────────────────────────────────┐
  *   │ PANOPLIE EN BOIS                  2/6 │
@@ -44,19 +48,19 @@ import java.util.Set;
 public final class SetCard {
     private SetCard() {}
 
-    private static final int PAD = 7;
+    private static final int PAD = CardRenderer.PAD;
     /** Pas entre deux cases ; la case dessinée fait BOX px, l'objet (16 px) tient dans son cadre. */
     private static final int SLOT = 20, BOX = SLOT - 2;
-    private static final int LINE_GUTTER = 7;
     /** En-tête : marge, titre (11), sous-titre (10), espace, rangée de cases, espace. */
     private static final int HEADER_H = PAD + 11 + 10 + 3 + SLOT + 3 + PAD - 4, SLOTS_TOP = 24;
-    private static final int SCROLL_STEP = 22;
+    /** Au-dessus des infobulles ; la petite infobulle d'une pièce encore au-dessus. */
+    private static final int Z = 450, PIECE_Z = Z + 300;
     private static final long CYCLE_MS = 1000; // une pièce "au choix" par seconde
     private static final int EMPTY_BG = 0x50000000, DIM_MISSING = 0xA0101420, DIM_OTHER_CHOICE = 0x70101420, DOTS_BG = 0xC0101420;
 
     private static String openSet;
     private static int anchorX, anchorY;
-    private static int scroll, scrollMax;
+    private static final CardScroll SCROLL = new CardScroll();
 
     /** Une case dessinée à la dernière image : la pièce affichée et où (pour le survol). */
     private record PieceSlot(String shownId, int x, int y) {
@@ -76,7 +80,7 @@ public final class SetCard {
     public static boolean open(ItemStack stack, int mouseX, int mouseY) {
         String setId = setOf(stack);
         if (setId == null) return false;
-        if (!setId.equals(openSet)) scroll = 0;
+        if (!setId.equals(openSet)) SCROLL.reset();
         openSet = setId;
         anchorX = mouseX;
         anchorY = mouseY;
@@ -99,14 +103,11 @@ public final class SetCard {
             return;
         }
         GuiGraphics g = event.getGuiGraphics();
-        g.pose().pushPose();
-        try {
-            SetCardContent card = SetCardContent.of(openSet, set, Minecraft.getInstance().player);
-            render(g, Minecraft.getInstance().font, card);
-            hoverPiece(g, event.getMouseX(), event.getMouseY(), card.worn);
-        } finally {
-            g.pose().popPose();
-        }
+        SetCardContent content = SetCardContent.of(openSet, set, Minecraft.getInstance().player);
+        Card card = new Card(new PiecesHeader(content), content.body, null, content.accent,
+                content.tier >= RpgFrame.MAX_TIER, RpgFrame.ornateLevelForTier(content.tier));
+        CardRenderer.render(g, Minecraft.getInstance().font, card, SCROLL, anchorX, anchorY, Z);
+        hoverPiece(g, event.getMouseX(), event.getMouseY(), content.worn);
     }
 
     @SubscribeEvent
@@ -118,101 +119,40 @@ public final class SetCard {
     @SubscribeEvent
     public static void onScroll(ScreenEvent.MouseScrolled.Pre event) {
         if (!isOpen()) return;
-        if (scrollMax > 0) scroll = Math.max(0, Math.min(scrollMax, scroll - (int) Math.signum(event.getScrollDeltaY()) * SCROLL_STEP));
+        SCROLL.wheel(event.getScrollDeltaY());
         event.setCanceled(true);
     }
 
-    // ---------------------------------------------------------------- Rendu
-
-    /** Où et à quelle taille la carte est dessinée, et la part visible du corps quand il défile. */
-    private record Layout(int x, int y, int width, int height, int view, int bodyH) {
-        int left() { return x + PAD; }
-        int right() { return x + width - PAD; }
-        int bodyTop() { return y + HEADER_H + 6; }
-        boolean scrolling() { return bodyH > view; }
-    }
+    // ---------------------------------------------------------------- En-tête
 
     /**
-     * Même mise en page que les infobulles d'objet : mêmes marges, tout aligné à gauche au même endroit,
-     * hauteur limitée (les bonus défilent à la molette), lore tout en bas.
+     * L'en-tête de la carte : nom de la panoplie et pièces portées, palier, puis une case par emplacement.
+     * Le corps (bonus par palier, lore) est dessiné par le moteur commun.
      */
-    private static void render(GuiGraphics g, Font font, SetCardContent card) {
-        int width = width(font, card);
-        List<SetCardContent.Line> body = withLore(font, card, width - 2 * PAD);
-        Layout layout = layout(g, body, width);
-        scrollMax = Math.max(0, layout.bodyH() - layout.view());
-        scroll = Math.min(scroll, scrollMax);
-
-        g.pose().translate(0, 0, 450);
-        RpgFrame.draw(g, layout.x(), layout.y(), width, layout.height(), HEADER_H, card.accent,
-                card.tier >= RpgFrame.MAX_TIER, RpgFrame.ornateLevelForTier(card.tier));
-        drawHeader(g, font, card, layout.left(), layout.right(), layout.y() + PAD);
-        drawSlots(g, card, layout.left(), layout.right(), layout.y() + PAD + SLOTS_TOP);
-        drawBody(g, font, card, body, layout);
-    }
-
-    /** Comme les infobulles : la largeur commune, élargie si une ligne ne tient pas. */
-    private static int width(Font font, SetCardContent card) {
-        int titleW = font.width(card.title) + 14 + font.width(card.count);
-        int subtitleW = font.width(card.subtitle) + 10 + font.width(RpgFrame.tierPips(card.tier));
-        int slotsW = Math.min(card.slots.size(), 8) * SLOT;
-        int contentW = Math.max(titleW, Math.max(subtitleW, slotsW));
-        for (SetCardContent.Line line : card.body) contentW = Math.max(contentW, line.width(font) + LINE_GUTTER);
-        return Math.min(ClientConfig.tooltipMaxWidth(), Math.max(ClientConfig.tooltipWidth(), contentW + 2 * PAD));
-    }
-
-    /** Les bonus, puis le lore coupé à la largeur de la carte. */
-    private static List<SetCardContent.Line> withLore(Font font, SetCardContent card, int inner) {
-        List<SetCardContent.Line> body = new ArrayList<>(card.body);
-        if (card.lore != null) {
-            body.add(new SetCardContent.Gap());
-            body.add(new SetCardContent.Rule());
-            for (FormattedCharSequence line : font.split(card.lore, inner - LINE_GUTTER)) body.add(new SetCardContent.LoreLine(line));
+    private record PiecesHeader(SetCardContent content) implements Card.Header {
+        @Override
+        public int width(Font font) {
+            int titleW = font.width(content.title) + 14 + font.width(content.count);
+            int subtitleW = font.width(content.subtitle) + 10 + font.width(RpgFrame.tierPips(content.tier));
+            int slotsW = Math.min(content.slots.size(), 8) * SLOT;
+            return Math.max(titleW, Math.max(subtitleW, slotsW));
         }
-        return body;
-    }
 
-    /** Hauteur limitée à l'écran (le corps défile au-delà) et position figée près de la souris, gardée dans l'écran. */
-    private static Layout layout(GuiGraphics g, List<SetCardContent.Line> body, int width) {
-        int bodyH = 0;
-        for (SetCardContent.Line line : body) bodyH += line.height();
-        int screenW = g.guiWidth(), screenH = g.guiHeight();
-        int view = Math.min(bodyH, Math.max(30, Math.min(ClientConfig.maxBodyHeight(), screenH - 8 - HEADER_H - 10)));
-        int height = HEADER_H + 6 + view + PAD - 2;
-        int x = anchorX + 12, y = anchorY - 12;
-        if (x + width + 4 > screenW) x = Math.max(4, anchorX - 16 - width);
-        if (y + height + 4 > screenH) y = screenH - height - 4;
-        return new Layout(x, Math.max(4, y), width, height, view, bodyH);
-    }
-
-    /** Le corps, découpé à sa zone visible quand il défile, avec sa barre de défilement. */
-    private static void drawBody(GuiGraphics g, Font font, SetCardContent card, List<SetCardContent.Line> body, Layout layout) {
-        g.pose().pushPose();
-        g.pose().translate(0, 0, 200);
-        int top = layout.bodyTop();
-        boolean scrolling = layout.scrolling();
-        int textRight = layout.right() - (scrolling ? LINE_GUTTER : 0);
-        if (scrolling) g.enableScissor(layout.x() + 1, top - 1, layout.x() + layout.width() - 1, top + layout.view() + 1);
-        int y = top - scroll;
-        for (SetCardContent.Line line : body) {
-            line.draw(g, font, layout.left(), textRight, y, card.accent);
-            y += line.height();
+        @Override
+        public int height() {
+            return HEADER_H;
         }
-        if (scrolling) {
-            g.disableScissor();
-            RpgFrame.scrollChrome(g, font, layout.x(), layout.width(), layout.right(), top, layout.view(), layout.bodyH(),
-                    scroll, scrollMax, card.accent);
-        }
-        g.pose().popPose();
-    }
 
-    private static void drawHeader(GuiGraphics g, Font font, SetCardContent card, int left, int right, int y) {
-        g.drawString(font, card.title, left, y, 0xFFFFFF, true);
-        g.drawString(font, card.count, right - font.width(card.count), y, card.wornCount > 0 ? RpgFrame.POSITIVE : RpgFrame.TEXT_DIM, true);
-        y += 11;
-        g.drawString(font, card.subtitle, left, y, RpgFrame.TEXT_DIM, true);
-        Component pips = RpgFrame.tierPips(card.tier);
-        g.drawString(font, pips, right - font.width(pips), y, 0xFFFFFF, true);
+        @Override
+        public void draw(GuiGraphics g, Font font, int left, int right, int top) {
+            int y = top + PAD;
+            g.drawString(font, content.title, left, y, 0xFFFFFF, true);
+            g.drawString(font, content.count, right - font.width(content.count), y, content.wornCount > 0 ? RpgFrame.POSITIVE : RpgFrame.TEXT_DIM, true);
+            g.drawString(font, content.subtitle, left, y + 11, RpgFrame.TEXT_DIM, true);
+            Component pips = RpgFrame.tierPips(content.tier);
+            g.drawString(font, pips, right - font.width(pips), y + 11, 0xFFFFFF, true);
+            drawSlots(g, content, left, right, y + SLOTS_TOP);
+        }
     }
 
     // ---------------------------------------------------------------- Cases des pièces
@@ -296,7 +236,7 @@ public final class SetCard {
         int h = choice == null ? 28 : 39;
         int x = Math.min(mouseX + 10, g.guiWidth() - w - 4), y = Math.max(4, mouseY - h - 4);
         g.pose().pushPose();
-        g.pose().translate(0, 0, 300);
+        g.pose().translate(0, 0, PIECE_Z);
         RpgFrame.draw(g, x, y, w, h, 0, worn ? RpgFrame.POSITIVE : RpgFrame.TEXT_DIM, false);
         g.drawString(font, name, x + 6, y + 5, 0xFFFFFF, true);
         g.drawString(font, type, x + 6, y + 16, RpgFrame.TEXT_DIM, true);

@@ -1,8 +1,7 @@
 package net.Kyap.KPItemsRarity.mixin;
 
-import net.Kyap.KPItemsRarity.client.tooltip.RpgTooltip;
-import net.Kyap.KPItemsRarity.client.tooltip.SetCard;
-import net.Kyap.KPItemsRarity.client.tooltip.TooltipText;
+import net.Kyap.KPItemsRarity.client.tooltip.item.RpgTooltip;
+import net.Kyap.KPItemsRarity.client.tooltip.setcard.SetCard;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -11,9 +10,13 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTextTooltip;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -46,15 +49,34 @@ public abstract class GuiGraphicsTooltipMixin {
         List<Component> lines = new ArrayList<>();
         List<ClientTooltipComponent> images = new ArrayList<>();
         for (ClientTooltipComponent c : components) {
-            if (c instanceof ClientTextTooltip text) lines.add(TooltipText.toComponent(((ClientTextTooltipAccessor) text).kpitemsrarity$getText()));
+            if (c instanceof ClientTextTooltip text) lines.add(kpitemsrarity$toComponent(((ClientTextTooltipAccessor) text).kpitemsrarity$getText()));
             else images.add(c);
         }
         ItemStack stack = tooltipStack;
         if (stack == null || stack.isEmpty()) stack = hoveredSlotItem(lines);
         if (stack.isEmpty()) return;
-        if (RpgTooltip.handle((GuiGraphics) (Object) this, font, lines, images, stack, mouseX, mouseY)) {
-            ci.cancel();
-        }
+        // Toujours l'infobulle RPG pour un objet : jamais le dessin vanilla.
+        RpgTooltip.render((GuiGraphics) (Object) this, font, lines, images, stack, mouseX, mouseY);
+        ci.cancel();
+    }
+
+    /** Ligne prête à dessiner -> texte avec ses styles, pour la relire et la remettre à nos couleurs. */
+    @Unique
+    private static Component kpitemsrarity$toComponent(FormattedCharSequence seq) {
+        MutableComponent out = Component.empty();
+        StringBuilder buf = new StringBuilder();
+        Style[] current = {Style.EMPTY};
+        seq.accept((index, style, codePoint) -> {
+            if (!style.equals(current[0]) && buf.length() > 0) {
+                out.append(Component.literal(buf.toString()).withStyle(current[0]));
+                buf.setLength(0);
+            }
+            current[0] = style;
+            buf.appendCodePoint(codePoint);
+            return true;
+        });
+        if (buf.length() > 0) out.append(Component.literal(buf.toString()).withStyle(current[0]));
+        return out;
     }
 
     /** Objet de la case survolée, seulement si l'infobulle commence bien par son nom. */
