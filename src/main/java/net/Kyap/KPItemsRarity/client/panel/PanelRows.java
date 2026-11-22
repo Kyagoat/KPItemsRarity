@@ -36,7 +36,8 @@ final class PanelRows {
             "harvest", 0x8A6A2E, "utility", 0x6A5A8A, "magic", 0x7A3B9A);
     /** Stats déjà dans le bandeau du haut. */
     private static final Set<String> IN_BAND = Set.of("vitality", "resistance");
-    private static final int RANGE_COLOR = 0x7FD1C7;
+    /** La couleur de la stat Portée (kp_stats/range.json), pour que les deux portées se ressemblent. */
+    private static final int RANGE_COLOR = 0x7BE0D8;
 
     /** Une ligne de la fiche. */
     sealed interface Row permits Header, StatLine, Toggle {}
@@ -141,7 +142,7 @@ final class PanelRows {
     private static Row attackRange(Player player) {
         double range = BetterCombatCompat.attackRange(player);
         if (range <= 0) range = player.entityInteractionRange();
-        String value = String.format(Locale.ROOT, "%.2f", range).replace('.', ',') + " m";
+        String value = String.format(Locale.ROOT, "%.1f", range); // écrite comme la stat Portée ("tenths")
         List<Elem> details = List.of(
                 text(Component.translatable("panel.kpitemsrarity.attack_range").withStyle(s -> s.withColor(RANGE_COLOR))),
                 text(Component.translatable("panel.kpitemsrarity.attack_range.detail", player.getMainHandItem().getHoverName())
