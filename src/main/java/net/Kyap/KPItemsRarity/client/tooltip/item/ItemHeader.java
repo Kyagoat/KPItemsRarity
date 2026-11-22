@@ -11,7 +11,7 @@ import net.Kyap.KPItemsRarity.data.RarityData;
 import net.Kyap.KPItemsRarity.data.RollRange;
 import net.Kyap.KPItemsRarity.data.StatDefinition;
 import net.Kyap.KPItemsRarity.stats.ItemRolls;
-import net.Kyap.KPItemsRarity.util.ModRarities.ModRarity;
+import net.Kyap.KPItemsRarity.rarity.ModRarity;
 import net.minecraft.Util;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -65,7 +65,7 @@ final class ItemHeader implements Card.Header {
     private static Component rarityLabel(ModRarity rarity, int accent, int upgrades) {
         MutableComponent label = Component.empty();
         if (upgrades > 0) label.append(Component.literal("✦".repeat(upgrades) + " ").withStyle(s -> s.withColor(RpgFrame.OVERMAX)));
-        label.append(Component.translatable("rarity.kpitemsrarity." + rarity.getId()).withStyle(s -> s.withColor(accent)));
+        label.append(rarity.displayName().copy().withStyle(s -> s.withColor(accent)));
         return label;
     }
 

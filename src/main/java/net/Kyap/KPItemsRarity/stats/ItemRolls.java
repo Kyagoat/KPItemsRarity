@@ -6,7 +6,8 @@ import net.Kyap.KPItemsRarity.data.ItemDefinition;
 import net.Kyap.KPItemsRarity.data.RarityData;
 import net.Kyap.KPItemsRarity.data.RollRange;
 import net.Kyap.KPItemsRarity.data.StatDefinition;
-import net.Kyap.KPItemsRarity.util.ModRarities;
+import net.Kyap.KPItemsRarity.rarity.ItemRarity;
+import net.Kyap.KPItemsRarity.rarity.ModRarity;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -73,7 +74,7 @@ public final class ItemRolls {
         // ligne Dégâts...), l'objet est retiré automatiquement, en gardant son exo et ses crans de rareté.
         if (stats != null && stats.lines().keySet().equals(expectedLines(def))) {
             // Objets d'avant la rareté dynamique (ou définition rééquilibrée) : on recalcule la rareté.
-            ModRarities.ModRarity expected = DynamicRarity.rarityFor(def, stats);
+            ModRarity expected = ItemRarity.rolled(def, stats);
             if (stack.get(ModDataComponents.RARITY) != expected) stack.set(ModDataComponents.RARITY, expected);
             return;
         }
@@ -135,7 +136,7 @@ public final class ItemRolls {
     /** Remplace les jets d'un objet (forgemagie) et recalcule sa rareté. */
     public static void setStats(ItemStack stack, ItemDefinition def, ItemStats stats) {
         stack.set(ModDataComponents.STATS, stats);
-        stack.set(ModDataComponents.RARITY, DynamicRarity.rarityFor(def, stats));
+        stack.set(ModDataComponents.RARITY, ItemRarity.rolled(def, stats));
     }
 
     private static void store(ItemStack stack, ItemDefinition def, Map<String, Integer> lines, int upgrades) {
@@ -146,7 +147,7 @@ public final class ItemRolls {
                 upgrades,
                 old != null ? old.well() : 0);
         stack.set(ModDataComponents.STATS, stats);
-        stack.set(ModDataComponents.RARITY, DynamicRarity.rarityFor(def, stats));
+        stack.set(ModDataComponents.RARITY, ItemRarity.rolled(def, stats));
         stack.remove(ModDataComponents.LEGACY_EFFECTS);
     }
 }

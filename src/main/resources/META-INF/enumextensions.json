@@ -5,7 +5,7 @@
       "name": "KPITEMSRARITY_LEGENDARY",
       "constructor": "(ILjava/lang/String;Ljava/util/function/UnaryOperator;)V",
       "parameters": {
-        "class": "net/Kyap/KPItemsRarity/util/RarityEnumParams",
+        "class": "net/Kyap/KPItemsRarity/rarity/RarityEnumParams",
         "method": "legendary"
       }
     },
@@ -14,7 +14,7 @@
       "name": "KPITEMSRARITY_MYTHIC",
       "constructor": "(ILjava/lang/String;Ljava/util/function/UnaryOperator;)V",
       "parameters": {
-        "class": "net/Kyap/KPItemsRarity/util/RarityEnumParams",
+        "class": "net/Kyap/KPItemsRarity/rarity/RarityEnumParams",
         "method": "mythic"
       }
     }

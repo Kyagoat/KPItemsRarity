@@ -1,6 +1,5 @@
-package net.Kyap.KPItemsRarity.util;
+package net.Kyap.KPItemsRarity.rarity;
 
-import net.Kyap.KPItemsRarity.util.ModRarities.ModRarity;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;

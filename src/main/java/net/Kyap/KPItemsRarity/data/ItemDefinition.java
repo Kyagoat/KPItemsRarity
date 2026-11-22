@@ -1,6 +1,6 @@
 package net.Kyap.KPItemsRarity.data;
 
-import net.Kyap.KPItemsRarity.util.ModRarities.ModRarity;
+import net.Kyap.KPItemsRarity.rarity.ModRarity;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;

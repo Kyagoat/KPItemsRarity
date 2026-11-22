@@ -7,9 +7,9 @@ import net.Kyap.KPItemsRarity.data.ItemDefinition;
 import net.Kyap.KPItemsRarity.data.RarityData;
 import net.Kyap.KPItemsRarity.data.RollRange;
 import net.Kyap.KPItemsRarity.data.StatDefinition;
-import net.Kyap.KPItemsRarity.stats.DynamicRarity;
+import net.Kyap.KPItemsRarity.rarity.ItemRarity;
+import net.Kyap.KPItemsRarity.rarity.ModRarity;
 import net.Kyap.KPItemsRarity.stats.ItemRolls;
-import net.Kyap.KPItemsRarity.util.ModRarities.ModRarity;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -131,11 +131,11 @@ public final class RarityCommand {
         ItemStack stack = held(ctx);
         ItemDefinition def = RarityData.itemDef(stack);
         ItemStats stats = stack.get(ModDataComponents.STATS);
-        ModRarity rarity = DynamicRarity.rarityOf(stack);
+        ModRarity rarity = ItemRarity.of(stack);
 
         MutableComponent text = Component.empty()
                 .append(stack.getHoverName()).append(" · ")
-                .append(Component.translatable("rarity.kpitemsrarity." + rarity.getId()).withStyle(rarity.getRarity().getStyleModifier()))
+                .append(rarity.displayName().copy().withStyle(rarity.vanilla().getStyleModifier()))
                 .append(" · ").append(Component.translatable("tooltip.kpitemsrarity.tier", def.tier));
         if (stats == null) {
             text.append("\n  ").append(Component.translatable("commands.kpitemsrarity.not_rolled"));
@@ -153,7 +153,7 @@ public final class RarityCommand {
                         .append(stat != null ? stat.name() : Component.literal(stats.exoStat()));
             }
             text.append("\n  ").append(Component.translatable("commands.kpitemsrarity.quality",
-                    Math.round(DynamicRarity.quality(stack) * 100)));
+                    Math.round(ItemRarity.quality(stack) * 100)));
         }
         ctx.getSource().sendSuccess(() -> text, false);
         return 1;

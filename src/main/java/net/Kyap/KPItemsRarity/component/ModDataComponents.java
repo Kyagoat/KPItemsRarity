@@ -1,7 +1,7 @@
 package net.Kyap.KPItemsRarity.component;
 
 import net.Kyap.KPItemsRarity.KPItemsRarity;
-import net.Kyap.KPItemsRarity.util.ModRarities.ModRarity;
+import net.Kyap.KPItemsRarity.rarity.ModRarity;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.neoforged.bus.api.IEventBus;

@@ -1,8 +1,8 @@
 package net.Kyap.KPItemsRarity.mixin;
 
 import net.Kyap.KPItemsRarity.component.ModDataComponents;
-import net.Kyap.KPItemsRarity.util.ModRarities.ModRarity;
-import net.Kyap.KPItemsRarity.util.RarityOverrides;
+import net.Kyap.KPItemsRarity.rarity.ModRarity;
+import net.Kyap.KPItemsRarity.rarity.RarityOverrides;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,7 +26,7 @@ public abstract class ItemStackMixin {
         // Sans jets : rareté choisie par les fichiers kp_rarity (matériaux, objets des autres mods)
         if (rarity == null) rarity = RarityOverrides.get(stack);
         if (rarity != null) {
-            cir.setReturnValue(rarity.getRarity());
+            cir.setReturnValue(rarity.vanilla());
         }
     }
 }

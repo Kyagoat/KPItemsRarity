@@ -14,10 +14,10 @@ import net.Kyap.KPItemsRarity.data.ItemDefinition;
 import net.Kyap.KPItemsRarity.data.RarityData;
 import net.Kyap.KPItemsRarity.data.SetDefinition;
 import net.Kyap.KPItemsRarity.data.StatDefinition;
-import net.Kyap.KPItemsRarity.stats.DynamicRarity;
+import net.Kyap.KPItemsRarity.rarity.ItemRarity;
 import net.Kyap.KPItemsRarity.stats.EquippedStats;
 import net.Kyap.KPItemsRarity.stats.SetPieces;
-import net.Kyap.KPItemsRarity.util.ModRarities.ModRarity;
+import net.Kyap.KPItemsRarity.rarity.ModRarity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
@@ -72,7 +72,7 @@ final class ItemCard {
     }
 
     private Card build(List<Component> vanilla, List<ClientTooltipComponent> images, Font font) {
-        ModRarity rarity = gear ? DynamicRarity.rarityOf(stack) : ItemTypes.fromVanilla(stack.getRarity());
+        ModRarity rarity = gear ? ItemRarity.of(stack) : ItemTypes.fromVanilla(stack.getRarity());
         int accent = RpgFrame.rarityColor(rarity);
 
         StatRows.add(body, stack, def, stats, font);
@@ -125,7 +125,7 @@ final class ItemCard {
         if (stats == null || !Screen.hasShiftDown()) return;
         body.add(Elem.Gap.SECTION);
         body.add(new Elem.Line(Component.translatable("tooltip.kpitemsrarity.rpg.quality").withStyle(s -> s.withColor(RpgFrame.TEXT_DIM)),
-                Component.literal(Math.round(DynamicRarity.quality(stack) * 100) + " %").withStyle(s -> s.withColor(RpgFrame.TEXT_SOFT))));
+                Component.literal(Math.round(ItemRarity.quality(stack) * 100) + " %").withStyle(s -> s.withColor(RpgFrame.TEXT_SOFT))));
     }
 
     // ---------------------------------------------------------------- Enchantements, panoplie

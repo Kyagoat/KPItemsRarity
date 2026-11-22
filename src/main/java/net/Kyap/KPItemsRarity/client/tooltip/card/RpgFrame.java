@@ -1,6 +1,6 @@
 package net.Kyap.KPItemsRarity.client.tooltip.card;
 
-import net.Kyap.KPItemsRarity.util.ModRarities.ModRarity;
+import net.Kyap.KPItemsRarity.rarity.ModRarity;
 import net.minecraft.Util;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
