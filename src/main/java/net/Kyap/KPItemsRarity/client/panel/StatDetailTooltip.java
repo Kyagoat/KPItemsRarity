@@ -1,5 +1,7 @@
 package net.Kyap.KPItemsRarity.client.panel;
 
+import net.Kyap.KPItemsRarity.client.tooltip.card.FrameStyle;
+import net.Kyap.KPItemsRarity.client.tooltip.card.Palette;
 import net.Kyap.KPItemsRarity.client.tooltip.card.RpgFrame;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -36,7 +38,7 @@ final class StatDetailTooltip {
 
         g.pose().pushPose();
         g.pose().translate(0, 0, 400);
-        RpgFrame.draw(g, x, y, boxW, boxH, 0, RpgFrame.TEXT_FAINT, false);
+        RpgFrame.draw(g, x, y, boxW, boxH, 0, FrameStyle.plain(Palette.TEXT_FAINT));
         int lineY = y + PAD;
         for (StatDetail d : details) {
             switch (d) {
@@ -90,7 +92,7 @@ final class StatDetailTooltip {
     /** Petite case : fond teinté et liseré à la couleur de la valeur (vert bonus, rouge malus), l'objet réduit dedans. */
     private static void drawIconBox(GuiGraphics g, ItemStack icon, int x, int y, boolean malus) {
         g.fill(x, y, x + BOX, y + BOX, malus ? MALUS_BG : BONUS_BG);
-        RpgFrame.outline(g, x, y, BOX, BOX, RpgFrame.argb(malus ? MALUS : BONUS, 0xB0));
+        RpgFrame.outline(g, x, y, BOX, BOX, Palette.argb(malus ? MALUS : BONUS, 0xB0));
         g.pose().pushPose();
         g.pose().translate(x + 1, y + 1, 0);
         g.pose().scale(ICON / 16f, ICON / 16f, 1f);

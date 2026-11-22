@@ -1,14 +1,14 @@
 package net.Kyap.KPItemsRarity.client.tooltip.setcard;
 
 import net.Kyap.KPItemsRarity.client.tooltip.card.Elem;
-import net.Kyap.KPItemsRarity.client.tooltip.card.RpgFrame;
+import net.Kyap.KPItemsRarity.client.tooltip.card.Palette;
 import net.Kyap.KPItemsRarity.client.tooltip.text.LoreText;
 import net.Kyap.KPItemsRarity.data.RarityData;
 import net.Kyap.KPItemsRarity.data.SetDefinition;
 import net.Kyap.KPItemsRarity.data.StatDefinition;
 import net.Kyap.KPItemsRarity.stats.EquippedStats;
 import net.Kyap.KPItemsRarity.stats.GearSlots;
-import net.Kyap.KPItemsRarity.stats.SetPieces;
+import net.Kyap.KPItemsRarity.stats.SetLayout;
 import net.Kyap.KPItemsRarity.util.ItemIds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -38,7 +38,7 @@ final class SetCardContent {
     final Component count;
     final Component subtitle;
     /** Une case par emplacement ; les pièces au choix partagent la même case. */
-    final List<List<String>> slots;
+    final List<List<SetLayout.Piece>> slots;
     /** Identifiants des pièces que porte le joueur (équipement et accessoires). */
     final Set<String> worn;
     /** Les bonus par palier, puis le lore. */
@@ -46,21 +46,20 @@ final class SetCardContent {
 
     private SetCardContent(String setId, SetDefinition set, @Nullable Player player) {
         this.setId = setId;
-        List<String> pieceIds = SetPieces.sortedPieces(setId);
-        this.slots = SetPieces.slotGroups(setId, pieceIds);
+        SetLayout layout = SetLayout.of(setId);
+        this.slots = layout.slots();
         this.worn = wornIds(player);
         this.wornCount = player != null ? EquippedStats.countSetPieces(player).getOrDefault(setId, 0) : 0;
-        int total = SetPieces.pieceCount(setId);
-        this.tier = SetPieces.tierOf(pieceIds);
-        this.accent = RpgFrame.tierColor(tier);
+        this.tier = layout.tier();
+        this.accent = Palette.tier(tier);
         this.title = set.name().withStyle(Style.EMPTY.withBold(true).withColor(TextColor.fromRgb(accent)));
-        this.count = Component.literal(wornCount + "/" + total);
-        this.subtitle = subtitle(SetPieces.firstTier(pieceIds), total);
+        this.count = Component.literal(wornCount + "/" + layout.wearable());
+        this.subtitle = subtitle(layout.firstTier(), layout.wearable());
         addTiers(set);
         Component lore = LoreText.set(set);
         if (lore != null) {
             body.add(new Elem.Rule());
-            body.add(new Elem.Text(List.of(lore), RpgFrame.TEXT_DIM));
+            body.add(new Elem.Text(List.of(lore), Palette.TEXT_DIM));
         }
     }
 
@@ -80,7 +79,7 @@ final class SetCardContent {
             if (!first) body.add(Elem.Gap.SECTION);
             first = false;
             String mark = isActive ? "▸ " : reached ? "✔ " : "";
-            int titleColor = isActive ? RpgFrame.POSITIVE : reached ? RpgFrame.TEXT_SOFT : RpgFrame.TEXT_FAINT;
+            int titleColor = isActive ? Palette.POSITIVE : reached ? Palette.TEXT_SOFT : Palette.TEXT_FAINT;
             body.add(new Elem.Title(Component.literal(mark).append(Component.translatable("setcard.kpitemsrarity.pieces", n)), titleColor));
             List<Map.Entry<String, Integer>> lines = new ArrayList<>(entry.getValue().entrySet());
             lines.sort(Comparator.comparingInt(b -> b.getValue() < 0 ? 1 : 0));
@@ -92,8 +91,8 @@ final class SetCardContent {
     }
 
     private static Component bonusText(StatDefinition stat, int value, boolean reached) {
-        int valueColor = !reached ? RpgFrame.TEXT_FAINT : value < 0 ? RpgFrame.NEGATIVE : RpgFrame.POSITIVE;
-        int nameColor = reached ? RpgFrame.TEXT_SOFT : RpgFrame.TEXT_FAINT;
+        int valueColor = !reached ? Palette.TEXT_FAINT : value < 0 ? Palette.NEGATIVE : Palette.POSITIVE;
+        int nameColor = reached ? Palette.TEXT_SOFT : Palette.TEXT_FAINT;
         return Component.literal(stat.formatValue(value, true) + " ").withStyle(st -> st.withColor(valueColor))
                 .append(stat.name().withStyle(st -> st.withColor(nameColor)));
     }

@@ -8,8 +8,8 @@ import net.minecraft.network.chat.Component;
 import java.util.List;
 
 /**
- * Le moteur commun des fenêtres RPG ({@link Card}) : il les mesure, les place près d'un point (la souris) sans
- * sortir de l'écran, puis dessine le cadre, l'en-tête, le corps qui défile et le pied.
+ * Le moteur commun des fenêtres RPG ({@link Card}) : il les mesure (une fois, voir {@link LiveCard}), les place près
+ * d'un point (la souris) sans sortir de l'écran, puis dessine le cadre, l'en-tête, le corps qui défile et le pied.
  *
  *   ┌──────────────────────────────┐
  *   │ en-tête (Card.Header)        │  hauteur choisie par l'en-tête
@@ -28,67 +28,77 @@ public final class CardRenderer {
     /** Place gardée à droite du texte pour la barre de défilement. */
     public static final int GUTTER = 7;
     private static final int BODY_GAP = 6, BODY_BOTTOM = 4, FOOTER_H = 13, BOTTOM = 4, WIDEN_STEP = 8;
+    /** Distance minimale au bord de l'écran ; hauteur visible minimale d'un corps qui défile. */
+    private static final int SCREEN_MARGIN = 4, MIN_VIEW = 30;
     /** Une fenêtre s'élargit plutôt que de s'allonger tant qu'elle est plus haute que les 4/5 de sa largeur. */
     private static final float TALL_RATIO = 0.8f;
 
-    /** Où la fenêtre est dessinée, ses hauteurs, et la partie visible de son corps. */
-    public record Placement(int x, int y, int width, int height, int headerH, int bodyH, int footerH, CardScroll.Viewport viewport) {
+    /** Les dimensions d'une carte : sa largeur et la hauteur de chaque partie (le corps en entier, sans défilement). */
+    public record Size(int width, int headerH, int bodyH, int footerH) {}
+
+    /** Où la fenêtre est dessinée à cette image, sa hauteur, et la partie visible de son corps. */
+    public record Placement(int x, int y, Size size, int height, CardScroll.Viewport viewport) {
+        public int width() {
+            return size.width();
+        }
+
         public int left() {
             return x + PAD;
         }
 
         public int right() {
-            return x + width - PAD;
+            return x + size.width() - PAD;
         }
 
         public int bodyTop() {
-            return y + headerH + BODY_GAP;
+            return y + size.headerH() + BODY_GAP;
         }
 
         Elem.Area bodyArea() {
-            int inner = width - 2 * PAD;
+            int inner = size.width() - 2 * PAD;
             return new Elem.Area(left(), right(), inner, viewport.scrolling() ? GUTTER : 0, inner - GUTTER);
         }
     }
 
+    /** Mesure la carte : à faire une fois, pas à chaque image (le texte y est retourné à la ligne plusieurs fois). */
+    public static Size measure(Card card, Font font) {
+        int width = width(card, font);
+        return new Size(width, card.header().height(), bodyHeight(card.body(), font, wrapWidth(width)), card.footer() != null ? FOOTER_H : 0);
+    }
+
     /**
-     * Place la fenêtre à côté de (anchorX, anchorY) et la dessine à la profondeur {@code z}.
+     * Place la carte à côté de (anchorX, anchorY) et la dessine à la profondeur {@code z}.
      * @return où elle a été dessinée (pour les survols de l'appelant)
      */
-    public static Placement render(GuiGraphics g, Font font, Card card, CardScroll scroll, int anchorX, int anchorY, int z) {
-        Placement p = place(card, font, scroll, anchorX, anchorY, g.guiWidth(), g.guiHeight());
+    public static Placement render(GuiGraphics g, Font font, Card card, Size size, CardScroll scroll, int anchorX, int anchorY, int z) {
+        Placement p = place(size, scroll, anchorX, anchorY, g.guiWidth(), g.guiHeight());
         g.pose().pushPose();
         g.pose().translate(0, 0, z);
-        RpgFrame.draw(g, p.x(), p.y(), p.width(), p.height(), p.headerH(), card.accent(), card.pulse(), card.ornate());
+        RpgFrame.draw(g, p.x(), p.y(), size.width(), p.height(), size.headerH(), card.style());
         card.header().draw(g, font, p.left(), p.right(), p.y());
         g.pose().pushPose();
         g.pose().translate(0, 0, 200); // au-dessus des objets dessinés dans l'en-tête
-        if (p.bodyH() > 0) drawBody(g, font, card, p);
-        if (card.footer() != null) drawFooter(g, font, card.footer(), card.accent(), p);
+        if (size.bodyH() > 0) drawBody(g, font, card, p);
+        if (card.footer() != null) drawFooter(g, font, card.footer(), card.style().accent(), p);
         g.pose().popPose();
         g.pose().popPose();
         return p;
     }
 
-    // ---------------------------------------------------------------- Mesure et placement
+    // ---------------------------------------------------------------- Placement et mesure
 
-    static Placement place(Card card, Font font, CardScroll scroll, int anchorX, int anchorY, int screenW, int screenH) {
-        int headerH = card.header().height();
-        int footerH = card.footer() != null ? FOOTER_H : 0;
-        int width = width(card, font);
-        int bodyH = bodyHeight(card.body(), font, wrapWidth(width));
+    /** Trop haute pour l'écran : seul le corps défile, l'en-tête et le pied restent. Placée comme l'infobulle vanilla. */
+    private static Placement place(Size size, CardScroll scroll, int anchorX, int anchorY, int screenW, int screenH) {
+        int fixedH = size.headerH() + BODY_GAP + BODY_BOTTOM + size.footerH() + BOTTOM;
+        int maxView = Math.max(MIN_VIEW, Math.min(ClientConfig.maxBodyHeight(), screenH - 2 * SCREEN_MARGIN - fixedH));
+        CardScroll.Viewport viewport = scroll.fit(size.bodyH(), maxView);
+        int height = size.headerH() + (size.bodyH() > 0 ? BODY_GAP + viewport.view() + BODY_BOTTOM : 0) + size.footerH() + BOTTOM;
 
-        // Trop haute pour l'écran : seul le corps défile, l'en-tête et le pied restent.
-        int fixedH = headerH + BODY_GAP + BODY_BOTTOM + footerH + BOTTOM;
-        int maxView = Math.max(30, Math.min(ClientConfig.maxBodyHeight(), screenH - 8 - fixedH));
-        CardScroll.Viewport viewport = scroll.fit(bodyH, maxView);
-        int height = headerH + (bodyH > 0 ? BODY_GAP + viewport.view() + BODY_BOTTOM : 0) + footerH + BOTTOM;
-
-        // Comme vanilla : à droite du point et un peu au-dessus, de l'autre côté si ça dépasse, toujours dans l'écran.
+        // À droite du point et un peu au-dessus ; de l'autre côté si ça dépasse ; toujours dans l'écran.
         int x = anchorX + 12, y = anchorY - 12;
-        if (x + width + 4 > screenW) x = Math.max(4, anchorX - 16 - width);
-        if (y + height + 4 > screenH) y = screenH - height - 4;
-        return new Placement(x, Math.max(4, y), width, height, headerH, bodyH, footerH, viewport);
+        if (x + size.width() + SCREEN_MARGIN > screenW) x = Math.max(SCREEN_MARGIN, anchorX - 16 - size.width());
+        if (y + height + SCREEN_MARGIN > screenH) y = screenH - height - SCREEN_MARGIN;
+        return new Placement(x, Math.max(SCREEN_MARGIN, y), size, height, viewport);
     }
 
     /**
@@ -132,21 +142,23 @@ public final class CardRenderer {
         if (viewport.scrolling()) g.enableScissor(p.x() + 1, top - 1, p.x() + p.width() - 1, top + viewport.view() + 1);
         Elem.Area area = p.bodyArea();
         int y = top - viewport.offset();
+        int viewBottom = top + viewport.view();
         for (Elem e : card.body()) {
-            e.draw(g, font, area, y);
-            y += e.height(font, area.wrapWidth());
+            int h = e.height(font, area.wrapWidth());
+            if (y + h > top && y < viewBottom) e.draw(g, font, area, y); // hors de la partie visible : rien à dessiner
+            y += h;
         }
         if (viewport.scrolling()) {
             g.disableScissor();
-            RpgFrame.scrollChrome(g, font, p.x(), p.width(), p.right(), top, viewport.view(), p.bodyH(),
-                    viewport.offset(), viewport.max(), card.accent());
+            RpgFrame.scrollChrome(g, font, p.x(), p.width(), p.right(), top, viewport.view(), p.size().bodyH(),
+                    viewport.offset(), viewport.max(), card.style().accent());
         }
     }
 
     /** Le pied : un trait à la couleur du cadre, le texte centré dessous. */
     private static void drawFooter(GuiGraphics g, Font font, Component footer, int accent, Placement p) {
-        int y = p.y() + p.height() - p.footerH() - 2;
-        g.fill(p.left(), y, p.right(), y + 1, RpgFrame.argb(accent, 0x40));
+        int y = p.y() + p.height() - p.size().footerH() - 2;
+        g.fill(p.left(), y, p.right(), y + 1, Palette.argb(accent, 0x40));
         g.drawString(font, footer, p.x() + (p.width() - font.width(footer)) / 2, y + 3, 0xFFFFFF, true);
     }
 }

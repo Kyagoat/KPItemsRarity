@@ -2,6 +2,7 @@ package net.Kyap.KPItemsRarity.client.tooltip.item;
 
 import net.Kyap.KPItemsRarity.ClientConfig;
 import net.Kyap.KPItemsRarity.client.tooltip.card.Card;
+import net.Kyap.KPItemsRarity.client.tooltip.card.Palette;
 import net.Kyap.KPItemsRarity.client.tooltip.card.RpgFrame;
 import net.Kyap.KPItemsRarity.client.tooltip.text.ItemTypes;
 import net.Kyap.KPItemsRarity.client.tooltip.text.Texts;
@@ -10,8 +11,8 @@ import net.Kyap.KPItemsRarity.data.ItemDefinition;
 import net.Kyap.KPItemsRarity.data.RarityData;
 import net.Kyap.KPItemsRarity.data.RollRange;
 import net.Kyap.KPItemsRarity.data.StatDefinition;
-import net.Kyap.KPItemsRarity.stats.ItemRolls;
 import net.Kyap.KPItemsRarity.rarity.ModRarity;
+import net.Kyap.KPItemsRarity.stats.ItemRolls;
 import net.minecraft.Util;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -41,6 +42,8 @@ final class ItemHeader implements Card.Header {
     private static final int PAD = 7, NAME_H = 11, SUBTITLE_H = 10, ICON_TOP = PAD + 12;
 
     private final ItemStack stack;
+    /** Depuis quand l'objet est survolé : le nom trop long attend un peu avant de défiler. */
+    private final long shownSince;
     private final Component name;
     private final Component rarityLabel;
     private final Component subtitle;
@@ -49,11 +52,12 @@ final class ItemHeader implements Card.Header {
     /** Taille de l'aperçu de l'objet (la même pour tous les objets). */
     private final int icon = ClientConfig.iconSize();
 
-    ItemHeader(ItemStack stack, @Nullable ItemDefinition def, @Nullable ItemStats stats, ModRarity rarity, int accent) {
+    ItemHeader(ItemStack stack, @Nullable ItemDefinition def, @Nullable ItemStats stats, ModRarity rarity, long shownSince) {
         this.stack = stack;
-        this.accent = accent;
+        this.shownSince = shownSince;
+        this.accent = Palette.rarity(rarity);
         this.name = stack.getHoverName().copy().withStyle(Style.EMPTY.withBold(true)
-                .withColor(TextColor.fromRgb(RpgFrame.mix(accent, 0xFFFFFF, 0.25f))));
+                .withColor(TextColor.fromRgb(Palette.mix(accent, 0xFFFFFF, 0.25f))));
         this.rarityLabel = rarityLabel(rarity, accent, stats != null ? stats.upgrades() : 0);
         MutableComponent sub = ItemTypes.typeName(stack).copy();
         if (def != null) sub.append(" · ").append(Component.translatable("tooltip.kpitemsrarity.tier", def.tier));
@@ -64,7 +68,7 @@ final class ItemHeader implements Card.Header {
     /** "✦✦ Épique" : la rareté, avec une étoile par cran gagné à la forge. */
     private static Component rarityLabel(ModRarity rarity, int accent, int upgrades) {
         MutableComponent label = Component.empty();
-        if (upgrades > 0) label.append(Component.literal("✦".repeat(upgrades) + " ").withStyle(s -> s.withColor(RpgFrame.OVERMAX)));
+        if (upgrades > 0) label.append(Component.literal("✦".repeat(upgrades) + " ").withStyle(s -> s.withColor(Palette.OVERMAX)));
         label.append(rarity.displayName().copy().withStyle(s -> s.withColor(accent)));
         return label;
     }
@@ -87,10 +91,10 @@ final class ItemHeader implements Card.Header {
     @Override
     public void draw(GuiGraphics g, Font font, int left, int right, int top) {
         int y = top + PAD;
-        ScrollingName.draw(g, font, name, stack, left, y, right - left - font.width(rarityLabel) - 6);
+        ScrollingName.draw(g, font, name, left, y, right - left - font.width(rarityLabel) - 6, Util.getMillis() - shownSince);
         g.drawString(font, rarityLabel, right - font.width(rarityLabel), y - 2, 0xFFFFFF, true);
         y += NAME_H;
-        g.drawString(font, subtitle, left, y, RpgFrame.TEXT_DIM, true);
+        g.drawString(font, subtitle, left, y, Palette.TEXT_DIM, true);
         y += SUBTITLE_H;
         if (base != null) base.draw(g, font, left, y + 3);
         drawIcon(g, right - icon, top + ICON_TOP);
@@ -98,8 +102,8 @@ final class ItemHeader implements Card.Header {
 
     /** Aperçu de l'objet sur un petit socle ; il lévite et se retourne toutes les 6 s comme une pièce qu'on fait tourner. */
     private void drawIcon(GuiGraphics g, int x, int y) {
-        g.fill(x - 3, y - 3, x + icon + 3, y + icon + 3, RpgFrame.argb(accent, 0x22));
-        g.fill(x - 2, y + icon + 2, x + icon + 2, y + icon + 3, RpgFrame.argb(accent, 0x70));
+        g.fill(x - 3, y - 3, x + icon + 3, y + icon + 3, Palette.argb(accent, 0x22));
+        g.fill(x - 2, y + icon + 2, x + icon + 2, y + icon + 3, Palette.argb(accent, 0x70));
         float flip = 1f, bob = 0f;
         if (ClientConfig.animatedIcon()) {
             long ms = Util.getMillis();
@@ -183,15 +187,15 @@ final class ItemHeader implements Card.Header {
 
         void draw(GuiGraphics g, Font font, int x, int y) {
             if (armor) g.blitSprite(ResourceLocation.withDefaultNamespace("hud/armor_full"), x, y + 2, 9, 9);
-            else g.drawString(font, "⚔", x, y + 2, RpgFrame.TEXT_SOFT, true);
+            else g.drawString(font, "⚔", x, y + 2, Palette.TEXT_SOFT, true);
             int vx = x + 12;
             g.pose().pushPose();
             g.pose().translate(vx, y, 0);
             g.pose().scale(1.5f, 1.5f, 1.0f);
-            g.drawString(font, value, 0, 0, RpgFrame.TEXT, true);
+            g.drawString(font, value, 0, 0, Palette.TEXT, true);
             g.pose().popPose();
-            if (!range.isEmpty()) g.drawString(font, range, vx + (int) (font.width(value) * 1.5f) + 4, y + 4, RpgFrame.TEXT_FAINT, true);
-            if (!label.getString().isEmpty()) g.drawString(font, label, vx, y + 14, RpgFrame.TEXT_DIM, true);
+            if (!range.isEmpty()) g.drawString(font, range, vx + (int) (font.width(value) * 1.5f) + 4, y + 4, Palette.TEXT_FAINT, true);
+            if (!label.getString().isEmpty()) g.drawString(font, label, vx, y + 14, Palette.TEXT_DIM, true);
         }
     }
 
@@ -209,23 +213,16 @@ final class ItemHeader implements Card.Header {
         private static final long WAIT_MS = 1000, PAUSE_MS = 900;
         private static final float SPEED = 0.03f; // pixels par milliseconde
 
-        private static ItemStack stack = ItemStack.EMPTY;
-        private static long since;
-
-        static void draw(GuiGraphics g, Font font, Component name, ItemStack hovered, int x, int y, int maxW) {
+        /** @param hoveredMs depuis combien de temps l'objet est survolé */
+        static void draw(GuiGraphics g, Font font, Component name, int x, int y, int maxW, long hoveredMs) {
             int full = font.width(name);
-            long now = Util.getMillis();
-            if (!ItemStack.isSameItemSameComponents(hovered, stack)) {
-                stack = hovered.copy();
-                since = now;
-            }
-            long elapsed = now - since - WAIT_MS;
-            if (full <= maxW || elapsed < 0) {
+            long scrollingMs = hoveredMs - WAIT_MS;
+            if (full <= maxW || scrollingMs < 0) {
                 g.drawString(font, RpgFrame.fit(font, name, maxW), x, y, 0xFFFFFF, true);
                 return;
             }
             g.enableScissor(x, y - 1, x + maxW, y + 10);
-            g.drawString(font, name, x - Math.round(shift(full - maxW, elapsed)), y, 0xFFFFFF, true);
+            g.drawString(font, name, x - Math.round(shift(full - maxW, scrollingMs)), y, 0xFFFFFF, true);
             g.disableScissor();
         }
 

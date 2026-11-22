@@ -1,6 +1,6 @@
 package net.Kyap.KPItemsRarity.client.tooltip.text;
 
-import net.Kyap.KPItemsRarity.client.tooltip.card.RpgFrame;
+import net.Kyap.KPItemsRarity.client.tooltip.card.Palette;
 import net.Kyap.KPItemsRarity.data.ItemDefinition;
 import net.Kyap.KPItemsRarity.data.SetDefinition;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -52,6 +52,6 @@ public final class LoreText {
         } else if (lang.has(defaultKey)) {
             text = Component.translatable(defaultKey);
         }
-        return text == null ? null : text.copy().withStyle(s -> s.withItalic(true).withColor(RpgFrame.TEXT_DIM));
+        return text == null ? null : text.copy().withStyle(s -> s.withItalic(true).withColor(Palette.TEXT_DIM));
     }
 }

@@ -1,6 +1,6 @@
 package net.Kyap.KPItemsRarity.client.tooltip.text;
 
-import net.Kyap.KPItemsRarity.client.tooltip.card.RpgFrame;
+import net.Kyap.KPItemsRarity.client.tooltip.card.Palette;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Holder;
@@ -52,8 +52,8 @@ import static java.util.Map.entry;
 final class DescriptionTemplate {
     private DescriptionTemplate() {}
 
-    private static final int TEXT = RpgFrame.TEXT_DIM;
-    private static final int VALUE = RpgFrame.TEXT;
+    private static final int TEXT = Palette.TEXT_DIM;
+    private static final int VALUE = Palette.TEXT;
     private static final Pattern VARIABLE = Pattern.compile("\\{([a-z_]+)(?::([^}]*))?}");
     private static final Component UNKNOWN = value("?");
     private static final FoodProperties NO_FOOD = new FoodProperties.Builder().build();
@@ -176,7 +176,7 @@ final class DescriptionTemplate {
     /** "Régénération II (0:45)" : pas de durée pour un effet instantané ou d'une seconde. */
     private static Component effect(MobEffectInstance instance, float durationFactor, float tickRate) {
         MobEffect effect = instance.getEffect().value();
-        int color = RpgFrame.mix(effect.getColor(), 0xFFFFFF, 0.35f);
+        int color = Palette.mix(effect.getColor(), 0xFFFFFF, 0.35f);
         MutableComponent text = Component.translatable(effect.getDescriptionId());
         if (instance.getAmplifier() > 0) text.append(" ").append(Component.translatable("enchantment.level." + (instance.getAmplifier() + 1)));
         text.withStyle(style -> style.withColor(color));

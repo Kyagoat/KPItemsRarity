@@ -31,7 +31,9 @@ Iron Guard Set 2/5 · [Left Alt]
 Every item gets the RPG tooltip (there is no classic tooltip any more): big item preview, name in the rarity
 colour, base damage (or armor) in large numbers, stat lines with their grey range, enchantments, set, passives,
 durability. The frame takes the rarity colour and pulses for Legendary and Mythic. Holding Alt on a set piece shows
-the set card instead. How the code is organised: `src/main/java/net/Kyap/KPItemsRarity/client/tooltip/README.md`.
+the set card instead. Code: `client/tooltip/` — `item/` builds an item's tooltip, `setcard/` the set card, `card/`
+is the window engine they share (frame, scrolling body, cache: a window is rebuilt only when what it shows changes,
+or 4 times a second), `text/` holds descriptions, lore and item types.
 
 ### Lore (texts to edit)
 
@@ -41,7 +43,7 @@ Every lore text lives in the language files `src/main/resources/assets/kpitemsra
 - set: `lore.set.<mod>.<set>` (e.g. `lore.set.kpitemsrarity.iron`), shown at the bottom of the set card.
 
 A `"lore"` field in a `kp_items` or `kp_sets` JSON overrides it (translation key or plain text). No key = no lore.
-All the logic is in `client/LoreText.java`.
+All the logic is in `client/tooltip/text/LoreText.java`.
 
 ### Item descriptions (every item)
 

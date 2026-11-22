@@ -139,26 +139,26 @@ public sealed interface Elem permits Elem.Line, Elem.Title, Elem.Gap, Elem.Rule,
 
         @Override
         public void draw(GuiGraphics g, Font font, Area area, int y) {
-            g.fill(area.left(), y + 1, area.right(), y + 2, RpgFrame.argb(RpgFrame.TEXT_FAINT, 0x60));
+            g.fill(area.left(), y + 1, area.right(), y + 2, Palette.argb(Palette.TEXT_FAINT, 0x60));
         }
     }
 
-    /** Texte libre (lore, descriptions, textes des autres mods) : retourné à la largeur ; un paragraphe vide = ligne vide. */
-    record Text(List<Component> paragraphs, int color) implements Elem {
-        private static final int TEXT_LINE_H = 10;
+    /** Texte libre (lore, descriptions, textes des autres mods), retourné à la largeur ; un paragraphe vide = ligne vide. */
+    final class Text implements Elem {
+        private static final int LINE_H = 10, MIN_WIDTH = 40;
+        private final List<Wrapped> paragraphs = new ArrayList<>();
+        private final int color;
 
-        private List<FormattedCharSequence> lines(Font font, int wrapWidth) {
-            List<FormattedCharSequence> out = new ArrayList<>();
-            for (Component c : paragraphs) {
-                if (c.getString().isEmpty()) out.add(FormattedCharSequence.EMPTY);
-                else out.addAll(font.split(c, Math.max(40, wrapWidth)));
-            }
-            return out;
+        public Text(List<Component> paragraphs, int color) {
+            for (Component paragraph : paragraphs) this.paragraphs.add(new Wrapped(paragraph, MIN_WIDTH));
+            this.color = color;
         }
 
         @Override
         public int height(Font font, int wrapWidth) {
-            return lines(font, wrapWidth).size() * TEXT_LINE_H;
+            int lines = 0;
+            for (Wrapped paragraph : paragraphs) lines += paragraph.lines(font, wrapWidth).size();
+            return lines * LINE_H;
         }
 
         @Override
@@ -168,9 +168,11 @@ public sealed interface Elem permits Elem.Line, Elem.Title, Elem.Gap, Elem.Rule,
 
         @Override
         public void draw(GuiGraphics g, Font font, Area area, int y) {
-            for (FormattedCharSequence line : lines(font, area.wrapWidth())) {
-                g.drawString(font, line, area.left(), y, color, true);
-                y += TEXT_LINE_H;
+            for (Wrapped paragraph : paragraphs) {
+                for (FormattedCharSequence line : paragraph.lines(font, area.wrapWidth())) {
+                    g.drawString(font, line, area.left(), y, color, true);
+                    y += LINE_H;
+                }
             }
         }
     }
@@ -178,24 +180,45 @@ public sealed interface Elem permits Elem.Line, Elem.Title, Elem.Gap, Elem.Rule,
     // ---------------------------------------------------------------- Encadrés
 
     /**
-     * Encadré d'un passif : nom (couleur de rareté) et voyant d'état sur la première ligne, puis sa description
-     * et sa formule, retournées à la largeur de la fenêtre. Plus pâle quand le passif n'est pas actif.
+     * Encadré d'un passif : nom et voyant d'état sur la première ligne, puis sa description et (Maj) sa formule,
+     * retournées à la largeur. Plus pâle quand le passif n'est pas actif.
      */
-    record Passive(Component name, Component state, Component desc, @Nullable Component formula,
-                   int color, boolean on) implements Elem {
-        private static final int PAD = 5;
+    final class Passive implements Elem {
+        private static final int PAD = 5, NAME_H = 11, LINE_H = 10, MIN_WIDTH = 60;
+        /** Marge au-dessus et en dessous du contenu, espace sous l'encadré. */
+        private static final int INSIDE_TOP = 4, INSIDE_BOTTOM = 4, BELOW = 3;
+        private final Component name, state;
+        private final Wrapped description;
+        @Nullable private final Wrapped formula;
+        private final int color;
+        private final boolean on;
 
-        private List<FormattedCharSequence> descLines(Font font, int wrapWidth) {
-            return font.split(desc, Math.max(60, wrapWidth - 10));
+        /**
+         * @param state   voyant à droite du nom (actif, en recharge...)
+         * @param formula réglages bruts, montrés avec Maj (null sinon)
+         * @param on      le passif agit en ce moment
+         */
+        public Passive(Component name, Component state, Component description, @Nullable Component formula, int color, boolean on) {
+            this.name = name;
+            this.state = state;
+            this.description = new Wrapped(description, MIN_WIDTH);
+            this.formula = formula == null ? null : new Wrapped(formula, MIN_WIDTH);
+            this.color = color;
+            this.on = on;
+        }
+
+        private List<FormattedCharSequence> descriptionLines(Font font, int wrapWidth) {
+            return description.lines(font, wrapWidth - 2 * PAD);
         }
 
         private List<FormattedCharSequence> formulaLines(Font font, int wrapWidth) {
-            return formula == null ? List.of() : font.split(formula, Math.max(60, wrapWidth - 10));
+            return formula == null ? List.of() : formula.lines(font, wrapWidth - 2 * PAD);
         }
 
         @Override
         public int height(Font font, int wrapWidth) {
-            return 4 + 11 + (descLines(font, wrapWidth).size() + formulaLines(font, wrapWidth).size()) * 10 + 4 + 3;
+            int lines = descriptionLines(font, wrapWidth).size() + formulaLines(font, wrapWidth).size();
+            return INSIDE_TOP + NAME_H + lines * LINE_H + INSIDE_BOTTOM + BELOW;
         }
 
         @Override
@@ -205,20 +228,20 @@ public sealed interface Elem permits Elem.Line, Elem.Title, Elem.Gap, Elem.Rule,
 
         @Override
         public void draw(GuiGraphics g, Font font, Area area, int y) {
-            int x0 = area.left(), x1 = area.textRight(), y0 = y + 1, y1 = y + height(font, area.wrapWidth()) - 3;
-            g.fill(x0, y0, x1, y1, RpgFrame.argb(color, on ? 0x24 : 0x12));
-            RpgFrame.outline(g, x0, y0, x1 - x0, y1 - y0, RpgFrame.argb(color, on ? 0xB0 : 0x50));
-            int ty = y0 + 4;
-            g.drawString(font, name, x0 + PAD, ty, 0xFFFFFF, true);
-            g.drawString(font, state, x1 - PAD - font.width(state), ty, 0xFFFFFF, true);
-            ty += 11;
-            for (FormattedCharSequence line : descLines(font, area.wrapWidth())) {
-                g.drawString(font, line, x0 + PAD, ty, on ? 0xE8E8E8 : RpgFrame.TEXT_DIM, true);
-                ty += 10;
+            int x0 = area.left(), x1 = area.textRight(), y0 = y + 1, y1 = y + height(font, area.wrapWidth()) - BELOW;
+            g.fill(x0, y0, x1, y1, Palette.argb(color, on ? 0x24 : 0x12));
+            RpgFrame.outline(g, x0, y0, x1 - x0, y1 - y0, Palette.argb(color, on ? 0xB0 : 0x50));
+            int textY = y0 + INSIDE_TOP;
+            g.drawString(font, name, x0 + PAD, textY, 0xFFFFFF, true);
+            g.drawString(font, state, x1 - PAD - font.width(state), textY, 0xFFFFFF, true);
+            textY += NAME_H;
+            for (FormattedCharSequence line : descriptionLines(font, area.wrapWidth())) {
+                g.drawString(font, line, x0 + PAD, textY, on ? 0xE8E8E8 : Palette.TEXT_DIM, true);
+                textY += LINE_H;
             }
             for (FormattedCharSequence line : formulaLines(font, area.wrapWidth())) {
-                g.drawString(font, line, x0 + PAD, ty, RpgFrame.TEXT_FAINT, true);
-                ty += 10;
+                g.drawString(font, line, x0 + PAD, textY, Palette.TEXT_FAINT, true);
+                textY += LINE_H;
             }
         }
     }

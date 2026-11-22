@@ -7,7 +7,7 @@ import net.Kyap.KPItemsRarity.events.AttributeEvents;
 import net.Kyap.KPItemsRarity.events.SetBonusEvents;
 import net.Kyap.KPItemsRarity.stats.EquippedStats;
 import net.Kyap.KPItemsRarity.stats.GearSlots;
-import net.Kyap.KPItemsRarity.stats.SetPieces;
+import net.Kyap.KPItemsRarity.stats.SetLayout;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -130,7 +130,7 @@ final class StatSources {
             var set = RarityData.set(entry.getKey());
             String key = SetBonusEvents.modifierId(entry.getKey(), "x").getPath();
             if (set != null && path.startsWith(key.substring(0, key.length() - 1))) {
-                return set.name().copy().append(" (" + entry.getValue() + "/" + SetPieces.pieceCount(entry.getKey()) + ")");
+                return set.name().copy().append(" (" + entry.getValue() + "/" + SetLayout.of(entry.getKey()).wearable() + ")");
             }
         }
         return Component.translatable("panel.kpitemsrarity.source.set");

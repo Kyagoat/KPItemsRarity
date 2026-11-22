@@ -1,7 +1,7 @@
 package net.Kyap.KPItemsRarity.client.tooltip.item;
 
 import net.Kyap.KPItemsRarity.client.tooltip.card.Elem;
-import net.Kyap.KPItemsRarity.client.tooltip.card.RpgFrame;
+import net.Kyap.KPItemsRarity.client.tooltip.card.Palette;
 import net.Kyap.KPItemsRarity.client.tooltip.text.Texts;
 import net.Kyap.KPItemsRarity.component.ItemStats;
 import net.Kyap.KPItemsRarity.data.ItemDefinition;
@@ -147,10 +147,10 @@ final class StatRows {
         }
         int color = valueColor(e);
         MutableComponent text = Component.literal(valueText(e) + " ").withStyle(s -> s.withColor(color))
-                .append(stat.name().withStyle(s -> s.withColor(RpgFrame.TEXT_SOFT)));
+                .append(stat.name().withStyle(s -> s.withColor(Palette.TEXT_SOFT)));
         // Fourchette juste après la stat (pas collée à droite) : l'infobulle reste étroite.
         if (!e.possible() && e.range() != null) {
-            text.append(Component.literal(" (" + e.range().format(stat) + ")").withStyle(s -> s.withColor(RpgFrame.TEXT_FAINT)));
+            text.append(Component.literal(" (" + e.range().format(stat) + ")").withStyle(s -> s.withColor(Palette.TEXT_FAINT)));
         }
         return new Elem.Line(text);
     }
@@ -172,10 +172,10 @@ final class StatRows {
 
     /** Vert pour un bonus, rouge pour un malus, or au-dessus du maximum du jet. */
     private static int valueColor(Entry e) {
-        if (!e.possible() && e.range() != null && e.value() > e.range().max()) return RpgFrame.OVERMAX;
+        if (!e.possible() && e.range() != null && e.value() > e.range().max()) return Palette.OVERMAX;
         // Une fourchette est un malus si elle ne monte jamais au-dessus de 0 ("-1 - 0 Vie").
         boolean malus = e.possible() && e.range() != null ? e.range().max() <= 0 && e.range().min() < 0 : e.value() < 0;
-        return malus ? RpgFrame.NEGATIVE : RpgFrame.POSITIVE;
+        return malus ? Palette.NEGATIVE : Palette.POSITIVE;
     }
 
     /** Un attribut vanilla sans stat du mod pour le représenter : même style, nom tel que le jeu le donne. */
@@ -185,10 +185,10 @@ final class StatRows {
         String value = modifier.operation() == AttributeModifier.Operation.ADD_VALUE
                 ? sign + Texts.number(amount)
                 : sign + Texts.number(amount * 100) + " %";
-        int color = amount < 0 ? RpgFrame.NEGATIVE : RpgFrame.POSITIVE;
+        int color = amount < 0 ? Palette.NEGATIVE : Palette.POSITIVE;
         return new Elem.Line(Component.literal(value + " ").withStyle(s -> s.withColor(color))
                 .append(Component.literal(capitalized(Component.translatable(attribute.value().getDescriptionId()).getString()))
-                        .withStyle(s -> s.withColor(RpgFrame.TEXT_SOFT))));
+                        .withStyle(s -> s.withColor(Palette.TEXT_SOFT))));
     }
 
     private static String capitalized(String text) {
@@ -203,7 +203,7 @@ final class StatRows {
         String key = "stat." + stat.namespace + "." + stat.id + ".desc";
         if (!Language.getInstance().has(key)) return;
         for (var part : font.getSplitter().splitLines(Component.translatable(key), HELP_WIDTH, Style.EMPTY)) {
-            body.add(new Elem.Line(Component.literal(part.getString()).withStyle(st -> st.withColor(RpgFrame.TEXT_FAINT).withItalic(true)), 8));
+            body.add(new Elem.Line(Component.literal(part.getString()).withStyle(st -> st.withColor(Palette.TEXT_FAINT).withItalic(true)), 8));
         }
     }
 
@@ -217,7 +217,7 @@ final class StatRows {
             }
         }
         if (best >= 0 && lines.get(best) instanceof Elem.Line line) {
-            lines.set(best, line.withHint(Component.translatable("tooltip.kpitemsrarity.rpg.help_hint").withStyle(st -> st.withColor(RpgFrame.TEXT_FAINT))));
+            lines.set(best, line.withHint(Component.translatable("tooltip.kpitemsrarity.rpg.help_hint").withStyle(st -> st.withColor(Palette.TEXT_FAINT))));
         }
     }
 }
