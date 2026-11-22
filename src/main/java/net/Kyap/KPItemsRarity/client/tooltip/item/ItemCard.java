@@ -72,7 +72,7 @@ final class ItemCard {
     }
 
     private Card build(List<Component> vanilla, List<ClientTooltipComponent> images, Font font) {
-        ModRarity rarity = gear ? ItemRarity.of(stack) : ItemTypes.fromVanilla(stack.getRarity());
+        ModRarity rarity = gear ? ItemRarity.of(stack) : ModRarity.fromVanilla(stack.getRarity());
         int accent = RpgFrame.rarityColor(rarity);
 
         StatRows.add(body, stack, def, stats, font);
@@ -180,19 +180,19 @@ final class ItemCard {
         List<Component> texts = new ArrayList<>(foreign.texts());
         ItemDescriptions.Description description = gear ? null : ItemDescriptions.describe(stack);
         // La description dit déjà la même chose (effets d'une potion...) : on ne répète pas les lignes vanilla.
-        if (description != null && description.replacesVanilla()) {
+        if (description != null && description.coversVanillaLines()) {
             statLines.clear();
             texts.clear();
         }
         for (ClientTooltipComponent image : images) statLines.add(new Elem.Image(image));
         body.addAll(afterStats, statLines);
         // Une seule légende : si l'objet a déjà sa propre description (son mod), pas de description automatique.
-        if (description != null && description.auto() && !texts.isEmpty()) description = null;
+        if (description != null && description.automatic() && !texts.isEmpty()) description = null;
         if (gear) {
             Component lore = LoreText.item(stack, def);
             if (lore != null) texts.add(lore);
         } else if (description != null) {
-            texts.addAll(description.parts());
+            texts.addAll(description.lines());
         }
         return texts;
     }

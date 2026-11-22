@@ -227,7 +227,7 @@
   "desc.kpitemsrarity.auto.storage": "Somewhere to keep your treasures safe.",
   "desc.kpitemsrarity.auto.utility_block": "A useful block, place it and use it with a right click.",
   "desc.kpitemsrarity.auto.block": "A block to build with.|Enough to build a whole village.|Builders always need some.",
-  "desc.minecraft.totem_of_undying": "Prevents its holder's death and gives {effects}. Breaks when used.",
+  "desc.minecraft.totem_of_undying": "Prevents its holder's death and gives {effect:regeneration,2,45}, {effect:absorption,2,5} and {effect:fire_resistance,1,40}. Breaks when used.",
   "desc.minecraft.ender_pearl": "When thrown, teleports you where it lands, at the cost of some health.",
   "desc.minecraft.ender_eye": "When thrown, leads to the nearest stronghold. Opens the End portal.",
   "desc.minecraft.elytra": "Wings taken from the end of the world. Jump into the void to glide, and a firework pushes you on when you slow down.",

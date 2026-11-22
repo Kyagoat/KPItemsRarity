@@ -227,7 +227,7 @@
   "desc.kpitemsrarity.auto.storage": "De quoi ranger ses trésors à l'abri.",
   "desc.kpitemsrarity.auto.utility_block": "Un bloc utile, à poser et à utiliser d'un clic droit.",
   "desc.kpitemsrarity.auto.block": "Un bloc pour bâtir.|De quoi construire un village entier.|Les bâtisseurs en ont toujours besoin.",
-  "desc.minecraft.totem_of_undying": "Empêche la mort de son porteur et lui confère {effects}. Se brise à l'usage.",
+  "desc.minecraft.totem_of_undying": "Empêche la mort de son porteur et lui confère {effect:regeneration,2,45}, {effect:absorption,2,5} et {effect:fire_resistance,1,40}. Se brise à l'usage.",
   "desc.minecraft.ender_pearl": "Une fois lancée, elle téléporte là où elle tombe, au prix d'un peu de vie.",
   "desc.minecraft.ender_eye": "Une fois lancé, il guide vers la forteresse la plus proche. Sert à ouvrir le portail de l'End.",
   "desc.minecraft.elytra": "Des ailes arrachées au bout du monde. Saute dans le vide pour planer, et une fusée te relance quand tu faiblis.",

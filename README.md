@@ -45,15 +45,19 @@ All the logic is in `client/LoreText.java`.
 
 ### Item descriptions (every item)
 
-Every item gets a short description in its tooltip header (`client/ItemDescriptions.java`), in this order:
-1. `desc.<mod>.<item>` written by hand (e.g. `desc.minecraft.totem_of_undying`);
-2. otherwise its lore (`lore.<mod>.<item>`);
-3. otherwise an automatic one by category: `desc.kpitemsrarity.auto.<category>` (food, potion, horse_armor, ore, log, block...).
+Every item that is not mod gear gets a short description at the bottom of its tooltip
+(`client/tooltip/text/ItemDescriptions.java`), in this order:
+1. `desc.<mod>.<item>` written by hand (e.g. `desc.minecraft.totem_of_undying`), followed by its lore if it has one;
+2. otherwise its lore (`lore.<mod>.<item>`), preceded by the automatic line when that line reads a value (it has a variable);
+3. otherwise an automatic one by category: `desc.kpitemsrarity.auto.<category>` (food, potion, horse_armor, ore, log,
+   block...). The categories are an ordered rule list in `ItemCategories.java` (first match wins).
 
 Texts can use variables read from the item and highlighted, so they follow datapack or mod changes:
-`{effects}` (potion, tipped arrow, stew, food, totem, with durations), `{nutrition}`, `{saturation}`, `{armor}`,
-`{durability}`, `{mob}` (spawn egg), `{song}` (music disc), `{fluid}` (bucket), `{fuel}` (furnace seconds), `{name}`.
-Example: `"desc.minecraft.totem_of_undying": "Prevents its holder's death and gives {effects}."`
+`{effects}` (potion, tipped arrow, stew, food, with durations), `{nutrition}`, `{saturation}`, `{armor}`,
+`{durability}`, `{mob}` (spawn egg), `{song}` (music disc), `{fluid}` (bucket), `{fuel}` (furnace seconds), `{name}`,
+and `{effect:<effect>,<level>,<seconds>}` for effects the game hardcodes instead of putting them on the item.
+Example: `"desc.minecraft.totem_of_undying": "Prevents its holder's death and gives {effect:regeneration,2,45}, ..."`
+(`DescriptionTemplate.java`). `{effects}` and `{song}` hide the vanilla lines that say the same thing.
 
 - An item with both a `desc` and a `lore` key shows both: the explanation, then the lore in italics.
 - Automatic descriptions never repeat what the stats already show (food, armor, damage): they are short flavor lines.
