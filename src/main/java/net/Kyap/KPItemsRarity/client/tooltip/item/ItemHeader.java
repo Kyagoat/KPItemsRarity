@@ -125,7 +125,10 @@ final class ItemHeader implements Card.Header {
     // ---------------------------------------------------------------- Valeur de base
 
     /** "🛡 5" ou "⚔ 6 (5 - 7)" en grand, avec la vitesse d'attaque dessous ({@code label}, vide s'il n'y en a pas). */
-    record BaseValue(Component label, String value, String range, boolean armor) {
+    /**
+     * @param rolled faux pour la fourchette d'un objet pas encore tiré (menu créatif, JEI) : écrite en gris
+     */
+    record BaseValue(Component label, String value, String range, boolean armor, boolean rolled) {
 
         /** La valeur de base de l'objet (armure ou dégâts), ou null s'il n'en a pas. */
         @Nullable
@@ -133,12 +136,12 @@ final class ItemHeader implements Card.Header {
             ItemAttributeModifiers mods = stack.getAttributeModifiers();
             if (stack.getItem() instanceof ArmorItem) {
                 double armor = sum(mods, Attributes.ARMOR);
-                if (armor > 0) return new BaseValue(Component.empty(), Texts.number(armor), "", true); // l'icône d'armure suffit
+                if (armor > 0) return new BaseValue(Component.empty(), Texts.number(armor), "", true, true); // l'icône d'armure suffit
             }
             BaseValue damage = modDamage(def, stats, attackSpeed(mods));
             if (damage != null) return damage;
             double vanilla = sum(mods, Attributes.ATTACK_DAMAGE);
-            return vanilla > 0 ? new BaseValue(attackSpeed(mods), Texts.number(1.0 + vanilla), "", false) : null;
+            return vanilla > 0 ? new BaseValue(attackSpeed(mods), Texts.number(1.0 + vanilla), "", false, true) : null;
         }
 
         /** La ligne de base "Dégâts" du mod : le jet et sa fourchette, ou la fourchette seule d'un objet pas encore tiré. */
@@ -151,10 +154,10 @@ final class ItemHeader implements Card.Header {
                 if (stats != null) {
                     if (!stats.lines().containsKey(statId)) continue;
                     RollRange r = ItemRolls.range(def, statId, stats.upgrades());
-                    return new BaseValue(speed, String.valueOf(stats.get(statId)), r != null ? "(" + r.format(sd) + ")" : "", false);
+                    return new BaseValue(speed, String.valueOf(stats.get(statId)), r != null ? "(" + r.format(sd) + ")" : "", false, true);
                 }
                 RollRange r = def.range(statId);
-                if (r != null) return new BaseValue(speed, r.format(sd), "", false);
+                if (r != null) return new BaseValue(speed, r.format(sd), "", false, false);
             }
             return null;
         }
@@ -192,7 +195,7 @@ final class ItemHeader implements Card.Header {
             g.pose().pushPose();
             g.pose().translate(vx, y, 0);
             g.pose().scale(1.5f, 1.5f, 1.0f);
-            g.drawString(font, value, 0, 0, Palette.TEXT, true);
+            g.drawString(font, value, 0, 0, rolled ? Palette.TEXT : Palette.TEXT_DIM, true);
             g.pose().popPose();
             if (!range.isEmpty()) g.drawString(font, range, vx + (int) (font.width(value) * 1.5f) + 4, y + 4, Palette.TEXT_FAINT, true);
             if (!label.getString().isEmpty()) g.drawString(font, label, vx, y + 14, Palette.TEXT_DIM, true);

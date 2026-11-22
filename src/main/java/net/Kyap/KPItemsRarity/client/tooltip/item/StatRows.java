@@ -38,7 +38,8 @@ import java.util.Locale;
  *   +3 Robustesse           attribut vanilla de l'objet, montré comme la stat du mod qui lui correspond
  *                           (ajouté au jet si l'objet tire aussi cette stat : une seule ligne)
  *
- * Toujours un signe, vert pour un bonus, rouge pour un malus ; le nom en gris clair. L'ordre est celui des stats
+ * Toujours un signe, vert pour un bonus, rouge pour un malus, gris tant que le jet n'est pas tiré (menu créatif,
+ * JEI : on ne voit que ce qu'il pourrait donner) ; le nom en gris clair. L'ordre est celui des stats
  * ("order" dans kp_stats, le même que la fiche de personnage). Maj : une courte explication sous chaque stat.
  */
 final class StatRows {
@@ -170,12 +171,11 @@ final class StatRows {
         return "tenths".equalsIgnoreCase(stat.format) ? sign + String.format(Locale.ROOT, "%.1f", points / 10.0) : sign + points;
     }
 
-    /** Vert pour un bonus, rouge pour un malus, or au-dessus du maximum du jet. */
+    /** Gris pour un jet pas encore tiré ; sinon vert pour un bonus, rouge pour un malus, or au-dessus du maximum. */
     private static int valueColor(Entry e) {
-        if (!e.possible() && e.range() != null && e.value() > e.range().max()) return Palette.OVERMAX;
-        // Une fourchette est un malus si elle ne monte jamais au-dessus de 0 ("-1 - 0 Vie").
-        boolean malus = e.possible() && e.range() != null ? e.range().max() <= 0 && e.range().min() < 0 : e.value() < 0;
-        return malus ? Palette.NEGATIVE : Palette.POSITIVE;
+        if (e.possible()) return Palette.TEXT_DIM;
+        if (e.range() != null && e.value() > e.range().max()) return Palette.OVERMAX;
+        return e.value() < 0 ? Palette.NEGATIVE : Palette.POSITIVE;
     }
 
     /** Un attribut vanilla sans stat du mod pour le représenter : même style, nom tel que le jeu le donne. */
