@@ -107,8 +107,10 @@ public final class CardRenderer {
      * fenêtre large et basse plutôt qu'une colonne étroite ; des lignes courtes ne l'élargissent pas pour rien.
      */
     private static int width(Card card, Font font) {
-        int contentW = card.header().width(font);
-        for (Elem e : card.body()) contentW = Math.max(contentW, e.width(font));
+        int bodyW = 0;
+        for (Elem e : card.body()) bodyW = Math.max(bodyW, e.width(font));
+        // Le corps garde la place de la barre de défilement : qu'il défile ou non (ça dépend de l'écran), rien n'est coupé.
+        int contentW = Math.max(card.header().width(font), bodyW > 0 ? bodyW + GUTTER : 0);
         if (card.footer() != null) contentW = Math.max(contentW, font.width(card.footer()));
         int minW = ClientConfig.tooltipWidth(), maxW = Math.max(minW, ClientConfig.tooltipMaxWidth());
         int width = Math.min(maxW, Math.max(minW, contentW + 2 * PAD));
