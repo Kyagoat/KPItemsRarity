@@ -38,13 +38,26 @@ public class ItemDefinition {
      */
     public Map<String, Double> conditions = new LinkedHashMap<>();
 
-    public boolean hasConditions() {
-        return conditions != null && !conditions.isEmpty();
+    private transient ModRarity minimumRarity = ModRarity.COMMON;
+
+    /** Complète la définition après lecture de son fichier (champs absents ou vides, rareté). */
+    void resolve(String file) {
+        id = file;
+        if (items == null) items = List.of();
+        if (stats == null) stats = new LinkedHashMap<>();
+        if (passives == null) passives = List.of();
+        if (conditions == null) conditions = new LinkedHashMap<>();
+        ModRarity parsed = ModRarity.fromId(rarity);
+        minimumRarity = parsed != null ? parsed : ModRarity.COMMON;
     }
 
-    public ModRarity parsedRarity() {
-        ModRarity r = ModRarity.fromId(rarity);
-        return r != null ? r : ModRarity.COMMON;
+    public boolean hasConditions() {
+        return !conditions.isEmpty();
+    }
+
+    /** La rareté la plus basse que l'objet peut avoir (champ "rarity"). */
+    public ModRarity minimumRarity() {
+        return minimumRarity;
     }
 
     /** La fourchette écrite dans le fichier ([min, max] ou [valeur]), remise dans l'ordre ; null si la stat n'y est pas. */

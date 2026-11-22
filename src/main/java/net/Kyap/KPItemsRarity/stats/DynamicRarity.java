@@ -33,7 +33,7 @@ public final class DynamicRarity {
             float q = quality(def, stats);
             fromRoll = q >= EPIC_AT ? ModRarity.EPIC : q >= RARE_AT ? ModRarity.RARE : q >= UNCOMMON_AT ? ModRarity.UNCOMMON : ModRarity.COMMON;
         }
-        ModRarity floor = def.parsedRarity();
+        ModRarity floor = def.minimumRarity();
         return fromRoll.ordinal() >= floor.ordinal() ? fromRoll : floor;
     }
 
@@ -63,6 +63,6 @@ public final class DynamicRarity {
         ModRarity r = stack.get(ModDataComponents.RARITY);
         if (r != null) return r;
         ItemDefinition def = RarityData.itemDef(stack);
-        return def != null ? def.parsedRarity() : ModRarity.COMMON;
+        return def != null ? def.minimumRarity() : ModRarity.COMMON;
     }
 }

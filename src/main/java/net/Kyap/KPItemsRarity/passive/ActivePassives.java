@@ -43,7 +43,7 @@ public final class ActivePassives {
         worn.addAll(GearSlots.wornAccessories(entity));
         for (ItemStack stack : worn) {
             ItemDefinition def = RarityData.itemDef(stack);
-            if (def != null && def.passives != null && Conditions.met(entity, def)) ids.addAll(def.passives);
+            if (def != null && Conditions.met(entity, def)) ids.addAll(def.passives);
         }
         EquippedStats.countSetPieces(entity).forEach((setId, count) -> {
             SetDefinition set = RarityData.set(setId);

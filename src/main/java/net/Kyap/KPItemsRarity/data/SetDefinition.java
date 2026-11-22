@@ -2,10 +2,13 @@ package net.Kyap.KPItemsRarity.data;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.TreeMap;
 
 /**
@@ -29,37 +32,52 @@ public class SetDefinition {
     /** Passifs débloqués à partir d'un nombre de pièces : { "5": ["kpsets:toile"] }. */
     public Map<String, List<String>> passives = Map.of();
 
-    /** Passifs actifs avec n pièces (tous les paliers atteints, cumulés). */
-    public List<String> activePassives(int pieces) {
-        List<String> out = new ArrayList<>();
-        if (passives == null) return out;
-        passives.forEach((k, ids) -> {
+    /** Les paliers par nombre de pièces, lus une fois au chargement (les clés du fichier sont du texte). */
+    private transient NavigableMap<Integer, Map<String, Integer>> bonusTiers = new TreeMap<>();
+    private transient NavigableMap<Integer, List<String>> passiveTiers = new TreeMap<>();
+
+    /** Complète la panoplie après lecture de son fichier. */
+    void resolve(String file) {
+        id = file;
+        bonusTiers = byPieceCount(bonuses);
+        passiveTiers = byPieceCount(passives);
+    }
+
+    /** { "2": x, "5": y } -> 2 -> x, 5 -> y ; une clé qui n'est pas un nombre est ignorée. */
+    private static <V> NavigableMap<Integer, V> byPieceCount(@Nullable Map<String, V> byText) {
+        TreeMap<Integer, V> sorted = new TreeMap<>();
+        if (byText == null) return sorted;
+        byText.forEach((pieces, value) -> {
             try {
-                if (Integer.parseInt(k.trim()) <= pieces && ids != null) out.addAll(ids);
+                if (value != null) sorted.put(Integer.parseInt(pieces.trim()), value);
             } catch (NumberFormatException ignored) {
+                // clé mal écrite : palier ignoré
             }
         });
-        return out;
+        return Collections.unmodifiableNavigableMap(sorted);
     }
 
-    /** Paliers triés : nombre de pièces -> bonus. */
-    public TreeMap<Integer, Map<String, Integer>> thresholds() {
-        TreeMap<Integer, Map<String, Integer>> sorted = new TreeMap<>();
-        if (bonuses != null) {
-            bonuses.forEach((k, v) -> {
-                try {
-                    sorted.put(Integer.parseInt(k.trim()), v);
-                } catch (NumberFormatException ignored) {
-                }
-            });
-        }
-        return sorted;
+    /** Paliers triés : nombre de pièces -> bonus TOTAL de ce palier. */
+    public NavigableMap<Integer, Map<String, Integer>> thresholds() {
+        return bonusTiers;
     }
 
-    /** Bonus actif pour n pièces (le palier le plus haut atteint), vide sinon. */
+    /** Bonus actif avec n pièces (celui du plus haut palier atteint), vide sinon. */
     public Map<String, Integer> activeBonus(int pieces) {
-        var entry = thresholds().floorEntry(pieces);
-        return entry == null ? Map.of() : entry.getValue();
+        var tier = bonusTiers.floorEntry(pieces);
+        return tier == null ? Map.of() : tier.getValue();
+    }
+
+    /** Paliers des passifs : nombre de pièces -> passifs débloqués à ce palier. */
+    public NavigableMap<Integer, List<String>> passiveTiers() {
+        return passiveTiers;
+    }
+
+    /** Passifs actifs avec n pièces : ceux de tous les paliers atteints. */
+    public List<String> activePassives(int pieces) {
+        List<String> out = new ArrayList<>();
+        passiveTiers.headMap(pieces, true).values().forEach(out::addAll);
+        return out;
     }
 
     public MutableComponent name() {

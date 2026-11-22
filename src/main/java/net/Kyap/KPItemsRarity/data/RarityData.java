@@ -2,13 +2,13 @@ package net.Kyap.KPItemsRarity.data;
 
 import net.Kyap.KPItemsRarity.KPItemsRarity;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -17,25 +17,34 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 /**
- * Accès unique aux données des datapacks :
- *  - data/<ns>/kp_stats/*.json -> caractéristiques (id = nom du fichier, ex. "strength")
- *  - data/<ns>/kp_items/*.json -> lignes de stats des objets
- *  - data/<ns>/kp_sets/*.json  -> panoplies (id = "<ns>:<nom>")
- * Les JSON bruts sont envoyés tels quels aux clients (ConfigSyncPayload) : tooltips, panneau
- * de stats et panoplies marchent donc aussi sur un serveur dédié.
+ * Les données des datapacks, et le seul endroit où les lire :
+ *
+ *   data/<mod>/kp_stats/<id>.json      les stats (id = nom du fichier : "strength")
+ *   data/<mod>/kp_items/<nom>.json     les stats des objets
+ *   data/<mod>/kp_sets/<nom>.json      les panoplies (id = "<mod>:<nom>")
+ *   data/<mod>/kp_passives/<nom>.json  les passifs (id = "<mod>:<nom>")
+ *
+ * Le serveur les lit au démarrage et à chaque /reload, puis envoie les fichiers tels quels aux joueurs
+ * (ConfigSyncPayload) : infobulles, fiche de personnage et forge marchent donc aussi sur un serveur dédié.
+ * Ce qui se calcule à partir des fichiers (ordre des stats, objet -> définition, pièces d'une panoplie) est calculé
+ * une fois au chargement.
  */
 @EventBusSubscriber(modid = KPItemsRarity.MOD_ID)
 public final class RarityData {
     private RarityData() {}
 
-    public static final Gson GSON = new GsonBuilder().create();
+    private static final Gson GSON = new Gson();
 
+    /** Les quatre sortes de fichiers, et leur dossier. */
     public enum Kind {
         STATS("kp_stats"), ITEMS("kp_items"), SETS("kp_sets"), PASSIVES("kp_passives");
 
@@ -46,40 +55,34 @@ public final class RarityData {
         }
     }
 
-    private static final SidedStore<StatDefinition> STATS = new SidedStore<>();
-    private static final SidedStore<ItemDefinition> ITEMS = new SidedStore<>();
-    private static final SidedStore<SetDefinition> SETS = new SidedStore<>();
-    private static final SidedStore<PassiveDefinition> PASSIVES = new SidedStore<>();
-    /** id d'objet ("minecraft:iron_sword") -> définition. */
-    private static final SidedStore<ItemDefinition> ITEM_INDEX = new SidedStore<>();
-    /** id de panoplie -> ids des objets qui la composent. */
-    private static final SidedStore<List<String>> SET_PIECES = new SidedStore<>();
+    private static final Sided<Map<String, StatDefinition>> STATS = new Sided<>(Map.of());
+    /** Les stats dans l'ordre d'affichage ("order", le même partout : infobulles, fiche, forge). */
+    private static final Sided<List<StatDefinition>> STAT_ORDER = new Sided<>(List.of());
+    /** Objet -> sa définition (par objet et non par son nom : demandé à chaque tick, sans rien allouer). */
+    private static final Sided<Map<Item, ItemDefinition>> ITEMS = new Sided<>(Map.of());
+    /** Id de panoplie -> ids des objets qui la composent. */
+    private static final Sided<Map<String, List<String>>> SET_PIECES = new Sided<>(Map.of());
+    private static final Sided<Map<String, SetDefinition>> SETS = new Sided<>(Map.of());
+    private static final Sided<Map<String, PassiveDefinition>> PASSIVES = new Sided<>(Map.of());
 
-    private static final Map<Kind, Map<String, String>> RAW = new HashMap<>();
+    /** Les fichiers lus par le serveur, gardés tels quels pour les envoyer aux joueurs. */
+    private static final Map<Kind, Map<String, String>> FILES = new EnumMap<>(Kind.class);
 
-    @SubscribeEvent
-    public static void onAddReloadListeners(AddReloadListenerEvent event) {
-        for (Kind kind : Kind.values()) event.addListener(new Loader(kind));
-    }
-
-    // ---------------------------------------------------------------- Accès
+    // ---------------------------------------------------------------- Lecture
 
     @Nullable
     public static StatDefinition stat(String id) {
         return STATS.get().get(id);
     }
 
-    /** Toutes les stats, triées par "order". */
+    /** Toutes les stats, dans l'ordre d'affichage. */
     public static List<StatDefinition> statsSorted() {
-        List<StatDefinition> list = new ArrayList<>(STATS.get().values());
-        list.sort(Comparator.comparingInt((StatDefinition s) -> s.order).thenComparing(s -> s.id));
-        return list;
+        return STAT_ORDER.get();
     }
 
     @Nullable
     public static ItemDefinition itemDef(ItemStack stack) {
-        if (stack.isEmpty()) return null;
-        return ITEM_INDEX.get().get(BuiltInRegistries.ITEM.getKey(stack.getItem()).toString());
+        return stack.isEmpty() ? null : ITEMS.get().get(stack.getItem());
     }
 
     @Nullable
@@ -87,126 +90,106 @@ public final class RarityData {
         return SETS.get().get(id);
     }
 
+    public static List<String> setPieces(String setId) {
+        return SET_PIECES.get().getOrDefault(setId, List.of());
+    }
+
     @Nullable
     public static PassiveDefinition passive(String id) {
         return PASSIVES.get().get(id);
     }
 
-    public static List<String> setPieces(String setId) {
-        return SET_PIECES.get().getOrDefault(setId, List.of());
-    }
-
-    public static Map<Kind, Map<String, String>> rawData() {
-        Map<Kind, Map<String, String>> copy = new HashMap<>();
-        RAW.forEach((k, v) -> copy.put(k, Map.copyOf(v)));
-        return copy;
+    /** Les fichiers du serveur, pour les envoyer aux joueurs. */
+    public static synchronized Map<Kind, Map<String, String>> files() {
+        return Map.copyOf(FILES);
     }
 
     // ---------------------------------------------------------------- Chargement
 
-    /** Côté client, à la réception du paquet de synchronisation. */
+    @SubscribeEvent
+    public static void onAddReloadListeners(AddReloadListenerEvent event) {
+        for (Kind kind : Kind.values()) event.addListener(new Loader(kind));
+    }
+
+    /** Côté client, à la réception des fichiers du serveur. */
     public static void applyClientSync(Map<String, String> stats, Map<String, String> items, Map<String, String> sets,
                                        Map<String, String> passives) {
-        PASSIVES.setClient(parsePassives(passives));
-        STATS.setClient(parseStats(stats));
-        Map<String, ItemDefinition> parsedItems = parseItems(items);
-        ITEMS.setClient(parsedItems);
-        ITEM_INDEX.setClient(buildIndex(parsedItems));
-        SET_PIECES.setClient(buildPieces(parsedItems));
-        SETS.setClient(parseSets(sets));
+        load(Kind.STATS, stats, Side.CLIENT);
+        load(Kind.ITEMS, items, Side.CLIENT);
+        load(Kind.SETS, sets, Side.CLIENT);
+        load(Kind.PASSIVES, passives, Side.CLIENT);
     }
 
-    private static void applyServer(Kind kind, Map<String, String> raw) {
-        RAW.put(kind, Map.copyOf(raw));
+    private enum Side {SERVER, CLIENT}
+
+    private static <T> void store(Sided<T> target, T value, Side side) {
+        if (side == Side.SERVER) target.setServer(value);
+        else target.setClient(value);
+    }
+
+    /** Lit une sorte de fichiers ("clé" = mod:nom du fichier -> JSON) et range ce qui en découle. */
+    private static void load(Kind kind, Map<String, String> files, Side side) {
         switch (kind) {
-            case STATS -> STATS.setServer(parseStats(raw));
+            case STATS -> {
+                Map<String, StatDefinition> stats = parseAll(files, StatDefinition.class, (stat, key) -> stat.resolve(ResourceLocation.parse(key)), stat -> stat.id);
+                List<StatDefinition> order = new ArrayList<>(stats.values());
+                order.sort(Comparator.comparingInt((StatDefinition stat) -> stat.order).thenComparing(stat -> stat.id));
+                store(STATS, Map.copyOf(stats), side);
+                store(STAT_ORDER, List.copyOf(order), side);
+            }
             case ITEMS -> {
-                Map<String, ItemDefinition> parsed = parseItems(raw);
-                ITEMS.setServer(parsed);
-                ITEM_INDEX.setServer(buildIndex(parsed));
-                SET_PIECES.setServer(buildPieces(parsed));
+                Map<String, ItemDefinition> items = parseAll(files, ItemDefinition.class, ItemDefinition::resolve, item -> item.id);
+                store(ITEMS, byItem(items.values()), side);
+                store(SET_PIECES, setPieces(items.values()), side);
             }
-            case SETS -> SETS.setServer(parseSets(raw));
-            case PASSIVES -> PASSIVES.setServer(parsePassives(raw));
+            case SETS -> store(SETS, Map.copyOf(parseAll(files, SetDefinition.class, SetDefinition::resolve, set -> set.id)), side);
+            case PASSIVES -> store(PASSIVES, Map.copyOf(parseAll(files, PassiveDefinition.class, (passive, key) -> passive.id = key, passive -> passive.id)), side);
         }
-        KPItemsRarity.LOGGER.info("KP Items Rarity : {} fichiers {} chargés", raw.size(), kind.directory);
     }
 
-    private static Map<String, StatDefinition> parseStats(Map<String, String> raw) {
-        Map<String, StatDefinition> out = new LinkedHashMap<>();
-        raw.forEach((key, json) -> {
-            StatDefinition def = parse(key, json, StatDefinition.class);
-            if (def == null) return;
-            ResourceLocation loc = ResourceLocation.tryParse(key);
-            def.namespace = loc != null ? loc.getNamespace() : KPItemsRarity.MOD_ID;
-            def.id = loc != null ? loc.getPath() : key;
-            out.put(def.id, def);
+    /**
+     * Lit chaque fichier ; un fichier illisible est signalé dans le journal et ignoré.
+     * @param resolve complète la définition lue (son id, ce qui se calcule une fois)
+     * @param idOf    la clé sous laquelle la ranger
+     */
+    private static <T> Map<String, T> parseAll(Map<String, String> files, Class<T> type, BiConsumer<T, String> resolve, Function<T, String> idOf) {
+        Map<String, T> out = new LinkedHashMap<>();
+        files.forEach((key, json) -> {
+            try {
+                T definition = GSON.fromJson(json, type);
+                resolve.accept(definition, key);
+                out.put(idOf.apply(definition), definition);
+            } catch (Exception e) {
+                KPItemsRarity.LOGGER.error("KP Items Rarity : impossible de lire {} ({})", key, type.getSimpleName(), e);
+            }
         });
         return out;
     }
 
-    private static Map<String, ItemDefinition> parseItems(Map<String, String> raw) {
-        Map<String, ItemDefinition> out = new LinkedHashMap<>();
-        raw.forEach((key, json) -> {
-            ItemDefinition def = parse(key, json, ItemDefinition.class);
-            if (def == null) return;
-            def.id = key;
-            out.put(key, def);
-        });
-        return out;
+    /**
+     * Objet -> définition. Un objet décrit deux fois (fiche générique + pièce de panoplie) : la pièce de panoplie
+     * gagne. Un objet d'un mod absent est ignoré.
+     */
+    private static Map<Item, ItemDefinition> byItem(Iterable<ItemDefinition> definitions) {
+        Map<Item, ItemDefinition> byItem = new HashMap<>();
+        for (ItemDefinition def : definitions) {
+            for (String id : def.items) {
+                ResourceLocation key = ResourceLocation.tryParse(id);
+                Item item = key == null ? null : BuiltInRegistries.ITEM.getOptional(key).orElse(null);
+                if (item != null) byItem.merge(item, def, (old, candidate) -> candidate.hasSet() || !old.hasSet() ? candidate : old);
+            }
+        }
+        return Map.copyOf(byItem);
     }
 
-    private static Map<String, SetDefinition> parseSets(Map<String, String> raw) {
-        Map<String, SetDefinition> out = new LinkedHashMap<>();
-        raw.forEach((key, json) -> {
-            SetDefinition def = parse(key, json, SetDefinition.class);
-            if (def == null) return;
-            def.id = key;
-            out.put(key, def);
-        });
-        return out;
-    }
-
-    private static Map<String, PassiveDefinition> parsePassives(Map<String, String> raw) {
-        Map<String, PassiveDefinition> out = new LinkedHashMap<>();
-        raw.forEach((key, json) -> {
-            PassiveDefinition def = parse(key, json, PassiveDefinition.class);
-            if (def == null) return;
-            def.id = key;
-            out.put(key, def);
-        });
-        return out;
-    }
-
-    private static Map<String, ItemDefinition> buildIndex(Map<String, ItemDefinition> defs) {
-        Map<String, ItemDefinition> index = new HashMap<>();
-        defs.values().forEach(def -> {
-            // Un objet décrit deux fois (fiche générique + pièce de panoplie d'un autre mod) : la pièce de panoplie gagne.
-            if (def.items != null) def.items.forEach(item -> index.merge(item, def, (old, neu) -> neu.hasSet() || !old.hasSet() ? neu : old));
-        });
-        return index;
-    }
-
-    private static Map<String, List<String>> buildPieces(Map<String, ItemDefinition> defs) {
+    private static Map<String, List<String>> setPieces(Iterable<ItemDefinition> definitions) {
         Map<String, List<String>> pieces = new HashMap<>();
-        defs.values().forEach(def -> {
-            if (def.hasSet() && def.items != null) {
-                pieces.computeIfAbsent(def.set, k -> new ArrayList<>()).addAll(def.items);
-            }
-        });
-        Map<String, List<String>> frozen = new HashMap<>();
-        pieces.forEach((k, v) -> frozen.put(k, List.copyOf(v)));
-        return frozen;
-    }
-
-    @Nullable
-    private static <T> T parse(String key, String json, Class<T> type) {
-        try {
-            return GSON.fromJson(json, type);
-        } catch (Exception e) {
-            KPItemsRarity.LOGGER.error("KP Items Rarity : impossible de lire {} ({})", key, type.getSimpleName(), e);
-            return null;
+        for (ItemDefinition def : definitions) {
+            if (def.hasSet()) pieces.computeIfAbsent(def.set, set -> new ArrayList<>()).addAll(def.items);
         }
+        Map<String, List<String>> frozen = new HashMap<>();
+        pieces.forEach((set, items) -> frozen.put(set, List.copyOf(items)));
+        return Map.copyOf(frozen);
     }
 
     private static final class Loader extends SimpleJsonResourceReloadListener {
@@ -219,9 +202,13 @@ public final class RarityData {
 
         @Override
         protected void apply(Map<ResourceLocation, JsonElement> entries, ResourceManager resourceManager, ProfilerFiller profiler) {
-            Map<String, String> raw = new HashMap<>();
-            entries.forEach((loc, json) -> raw.put(loc.toString(), json.toString()));
-            applyServer(kind, raw);
+            Map<String, String> files = new HashMap<>();
+            entries.forEach((id, json) -> files.put(id.toString(), json.toString()));
+            synchronized (RarityData.class) {
+                FILES.put(kind, Map.copyOf(files));
+            }
+            load(kind, files, Side.SERVER);
+            KPItemsRarity.LOGGER.info("KP Items Rarity : {} fichiers {} chargés", files.size(), kind.directory);
         }
     }
 }

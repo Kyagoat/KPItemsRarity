@@ -7,6 +7,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
 import java.util.Optional;
@@ -27,6 +28,10 @@ import java.util.Optional;
 public class StatDefinition {
     public transient String id;
     public transient String namespace;
+    /** Calculés une fois au chargement (voir resolve) : ils servent à chaque image et à chaque tick. */
+    @Nullable private transient Holder<Attribute> resolvedAttribute;
+    private transient AttributeModifier.Operation resolvedOperation;
+    private transient int resolvedRgb;
 
     public String attribute;
     public String operation = "add_value";
@@ -55,37 +60,51 @@ public class StatDefinition {
      */
     public String display = "";
 
-    public boolean showsTotal() {
-        if ("total".equalsIgnoreCase(display)) return true;
-        if ("bonus".equalsIgnoreCase(display)) return false;
-        if (parsedOperation() != AttributeModifier.Operation.ADD_VALUE) return false;
-        return attributeHolder().map(h -> Math.abs(h.value().getDefaultValue() - 1.0) > 1e-6).orElse(false);
+    /** Complète la stat après lecture de son fichier : son id, son attribut, son opération, sa couleur. */
+    void resolve(ResourceLocation file) {
+        namespace = file.getNamespace();
+        id = file.getPath();
+        ResourceLocation attributeId = attribute == null ? null : ResourceLocation.tryParse(attribute);
+        resolvedAttribute = attributeId == null ? null : BuiltInRegistries.ATTRIBUTE.getHolder(attributeId).orElse(null);
+        resolvedOperation = AttributeModifier.Operation.ADD_VALUE;
+        for (AttributeModifier.Operation op : AttributeModifier.Operation.values()) {
+            if (op.getSerializedName().equalsIgnoreCase(operation)) resolvedOperation = op;
+        }
+        resolvedRgb = parseRgb(color);
     }
 
+    private static int parseRgb(String hex) {
+        try {
+            return Integer.parseInt(hex.replace("#", ""), 16) & 0xFFFFFF;
+        } catch (RuntimeException e) {
+            return 0xFFFFFF;
+        }
+    }
+
+    /** L'attribut que la stat modifie ; vide si son mod est absent. */
     public Optional<Holder<Attribute>> attributeHolder() {
-        if (attribute == null) return Optional.empty();
-        ResourceLocation loc = ResourceLocation.tryParse(attribute);
-        if (loc == null) return Optional.empty();
-        return BuiltInRegistries.ATTRIBUTE.getHolder(loc).map(h -> h);
+        return Optional.ofNullable(resolvedAttribute);
     }
 
+    /** La stat agit (son attribut existe). Une stat d'un mod absent reste affichée, barrée. */
     public boolean isActive() {
-        return attributeHolder().isPresent();
+        return resolvedAttribute != null;
     }
 
     public AttributeModifier.Operation parsedOperation() {
-        for (AttributeModifier.Operation op : AttributeModifier.Operation.values()) {
-            if (op.getSerializedName().equalsIgnoreCase(operation)) return op;
-        }
-        return AttributeModifier.Operation.ADD_VALUE;
+        return resolvedOperation;
     }
 
     public int rgb() {
-        try {
-            return Integer.parseInt(color.replace("#", ""), 16) & 0xFFFFFF;
-        } catch (Exception e) {
-            return 0xFFFFFF;
-        }
+        return resolvedRgb;
+    }
+
+    /** Fiche de personnage : montrer la valeur totale (base comprise) plutôt que le seul bonus ? */
+    public boolean showsTotal() {
+        if ("total".equalsIgnoreCase(display)) return true;
+        if ("bonus".equalsIgnoreCase(display)) return false;
+        if (resolvedOperation != AttributeModifier.Operation.ADD_VALUE || resolvedAttribute == null) return false;
+        return Math.abs(resolvedAttribute.value().getDefaultValue() - 1.0) > 1e-6;
     }
 
     public MutableComponent name() {

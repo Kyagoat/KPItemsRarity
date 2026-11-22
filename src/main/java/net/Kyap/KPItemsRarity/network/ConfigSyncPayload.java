@@ -42,7 +42,7 @@ public record ConfigSyncPayload(Map<String, String> stats, Map<String, String> i
     }
 
     public static ConfigSyncPayload fromServerData() {
-        Map<RarityData.Kind, Map<String, String>> raw = RarityData.rawData();
+        Map<RarityData.Kind, Map<String, String>> raw = RarityData.files();
         return new ConfigSyncPayload(
                 raw.getOrDefault(RarityData.Kind.STATS, Map.of()),
                 raw.getOrDefault(RarityData.Kind.ITEMS, Map.of()),
