@@ -21,6 +21,22 @@ public record Card(Header header, List<Elem> body, @Nullable Component footer, F
 
     /** L'en-tête dit sa taille et se dessine lui-même : c'est la seule partie propre à chaque fenêtre. */
     public interface Header {
+        /** Pas d'en-tête : une petite fenêtre d'aide, rien que le corps. */
+        Header NONE = new Header() {
+            @Override
+            public int width(Font font) {
+                return 0;
+            }
+
+            @Override
+            public int height() {
+                return 0;
+            }
+
+            @Override
+            public void draw(GuiGraphics g, Font font, int left, int right, int top) {}
+        };
+
         /** Largeur que l'en-tête demande à la fenêtre. */
         int width(Font font);
 

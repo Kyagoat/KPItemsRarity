@@ -1,5 +1,6 @@
 package net.Kyap.KPItemsRarity.client.panel;
 
+import net.Kyap.KPItemsRarity.client.tooltip.card.Elem;
 import net.Kyap.KPItemsRarity.compat.BetterCombatCompat;
 import net.Kyap.KPItemsRarity.data.RarityData;
 import net.Kyap.KPItemsRarity.data.StatDefinition;
@@ -46,7 +47,11 @@ final class PanelRows {
     /** Comment afficher une stat : normale, à 0 (grisée) ou en négatif (malus). */
     enum Shade { NORMAL, ZERO, MALUS }
 
-    record StatLine(Component label, String value, int color, Shade shade, List<StatDetail> details) implements Row {}
+    /**
+     * @param id      ce qui identifie la ligne d'une image à l'autre (la stat)
+     * @param details le contenu de son infobulle au survol
+     */
+    record StatLine(String id, Component label, String value, int color, Shade shade, List<Elem> details) implements Row {}
 
     /** "Afficher / masquer les stats inactives". */
     record Toggle(Component label) implements Row {}
@@ -66,7 +71,7 @@ final class PanelRows {
             StatValue v = StatValue.of(stat, instance);
             String category = stat.category.toLowerCase(Locale.ROOT);
             Shade shade = v.gained() == 0 && v.points() == 0 ? Shade.ZERO : v.gained() < 0 ? Shade.MALUS : Shade.NORMAL;
-            Row row = new StatLine(stat.name(), stat.formatValue(v.points(), !v.total() && v.points() != 0), stat.rgb(), shade,
+            Row row = new StatLine(stat.id, stat.name(), stat.formatValue(v.points(), !v.total() && v.points() != 0), stat.rgb(), shade,
                     details(entity, stat, instance, v));
             (v.gained() != 0 ? active : idle).computeIfAbsent(category, k -> new ArrayList<>()).add(row);
         }
@@ -90,19 +95,23 @@ final class PanelRows {
     }
 
     /** Survol d'une stat : son nom, ce qu'elle fait (une ligne courte), sa base, puis QUI la donne. */
-    private static List<StatDetail> details(LivingEntity entity, StatDefinition stat, AttributeInstance instance, StatValue v) {
-        List<StatDetail> details = new ArrayList<>();
-        details.add(new StatDetail.Text(stat.name().withStyle(st -> st.withColor(stat.rgb()))));
+    private static List<Elem> details(LivingEntity entity, StatDefinition stat, AttributeInstance instance, StatValue v) {
+        List<Elem> details = new ArrayList<>();
+        details.add(text(stat.name().withStyle(st -> st.withColor(stat.rgb()))));
         String descKey = "stat." + stat.namespace + "." + stat.id + ".desc";
         if (Language.getInstance().has(descKey)) {
-            details.add(new StatDetail.Text(Component.translatable(descKey).withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC)));
+            details.add(text(Component.translatable(descKey).withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC)));
         }
         if (v.total()) {
-            details.add(new StatDetail.Text(Component.translatable("panel.kpitemsrarity.detail.base", stat.formatValue(v.basePoints(), false))
+            details.add(text(Component.translatable("panel.kpitemsrarity.detail.base", stat.formatValue(v.basePoints(), false))
                     .withStyle(ChatFormatting.DARK_GRAY)));
         }
         details.addAll(StatSources.sources(entity, stat, instance));
         return details;
+    }
+
+    static Elem text(Component text) {
+        return new Elem.Text(List.of(text), 0xFFFFFF);
     }
 
     /** Ce qui bouge d'abord par famille, puis le reste (si demandé), et la ligne pour tout afficher / masquer. */
@@ -133,10 +142,10 @@ final class PanelRows {
         double range = BetterCombatCompat.attackRange(player);
         if (range <= 0) range = player.entityInteractionRange();
         String value = String.format(Locale.ROOT, "%.2f", range).replace('.', ',') + " m";
-        List<StatDetail> details = List.of(
-                new StatDetail.Text(Component.translatable("panel.kpitemsrarity.attack_range").withStyle(s -> s.withColor(RANGE_COLOR))),
-                new StatDetail.Text(Component.translatable("panel.kpitemsrarity.attack_range.detail", player.getMainHandItem().getHoverName())
+        List<Elem> details = List.of(
+                text(Component.translatable("panel.kpitemsrarity.attack_range").withStyle(s -> s.withColor(RANGE_COLOR))),
+                text(Component.translatable("panel.kpitemsrarity.attack_range.detail", player.getMainHandItem().getHoverName())
                         .withStyle(ChatFormatting.GRAY)));
-        return new StatLine(Component.translatable("panel.kpitemsrarity.attack_range"), value, RANGE_COLOR, Shade.NORMAL, details);
+        return new StatLine("attack_range", Component.translatable("panel.kpitemsrarity.attack_range"), value, RANGE_COLOR, Shade.NORMAL, details);
     }
 }

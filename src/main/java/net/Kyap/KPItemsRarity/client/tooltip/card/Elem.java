@@ -1,10 +1,12 @@
 package net.Kyap.KPItemsRarity.client.tooltip.card;
 
+import net.minecraft.Util;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -19,10 +21,11 @@ import java.util.List;
  *   Gap      un espace vide
  *   Rule     un trait de séparation
  *   Text     un texte libre, retourné à la largeur de la fenêtre (lore, descriptions)
+ *   ItemLine une ligne avec un petit objet dans sa case ("+3  [casque] Casque en bois")
  *   Passive  l'encadré d'un passif
  *   Image    une image d'un autre mod (emplacements d'appât de Tide, contenu d'une sacoche...)
  */
-public sealed interface Elem permits Elem.Line, Elem.Title, Elem.Gap, Elem.Rule, Elem.Text, Elem.Passive, Elem.Image {
+public sealed interface Elem permits Elem.Line, Elem.Title, Elem.Gap, Elem.Rule, Elem.Text, Elem.ItemLine, Elem.Passive, Elem.Image {
 
     /** Hauteur d'une ligne de texte du corps. */
     int LINE_H = 11;
@@ -174,6 +177,47 @@ public sealed interface Elem permits Elem.Line, Elem.Title, Elem.Gap, Elem.Rule,
                     y += LINE_H;
                 }
             }
+        }
+    }
+
+    /**
+     * Une ligne avec un petit objet dans sa case, teintée de {@code color} : "+3  [casque] Casque en bois". Plusieurs
+     * objets (les pièces portées d'une panoplie) défilent, un par seconde ; sans objet, pas de case.
+     */
+    record ItemLine(Component value, List<ItemStack> items, Component name, int color) implements Elem {
+        private static final int ICON = 10, BOX = 12, HEIGHT_WITH_ICON = 14;
+        private static final long CYCLE_MS = 1000;
+
+        @Override
+        public int height(Font font, int wrapWidth) {
+            return items.isEmpty() ? LINE_H : HEIGHT_WITH_ICON;
+        }
+
+        @Override
+        public int width(Font font) {
+            return font.width(value) + 4 + (items.isEmpty() ? 0 : BOX + 3) + font.width(name);
+        }
+
+        @Override
+        public void draw(GuiGraphics g, Font font, Area area, int y) {
+            int x = area.left(), textY = y + (items.isEmpty() ? 0 : 3);
+            g.drawString(font, value, x, textY, 0xFFFFFF, true);
+            x += font.width(value) + 4;
+            if (!items.isEmpty()) {
+                drawBox(g, items.get((int) ((Util.getMillis() / CYCLE_MS) % items.size())), x, y);
+                x += BOX + 3;
+            }
+            g.drawString(font, name, x, textY, 0xFFFFFF, true);
+        }
+
+        private void drawBox(GuiGraphics g, ItemStack item, int x, int y) {
+            g.fill(x, y, x + BOX, y + BOX, Palette.argb(color, 0x40));
+            RpgFrame.outline(g, x, y, BOX, BOX, Palette.argb(color, 0xB0));
+            g.pose().pushPose();
+            g.pose().translate(x + 1, y + 1, 0);
+            g.pose().scale(ICON / 16f, ICON / 16f, 1f);
+            g.renderFakeItem(item, 0, 0);
+            g.pose().popPose();
         }
     }
 

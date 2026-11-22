@@ -1,6 +1,7 @@
 package net.Kyap.KPItemsRarity.client.panel;
 
 import net.Kyap.KPItemsRarity.KPItemsRarity;
+import net.Kyap.KPItemsRarity.client.tooltip.card.Elem;
 import net.Kyap.KPItemsRarity.data.RarityData;
 import net.Kyap.KPItemsRarity.data.StatDefinition;
 import net.Kyap.KPItemsRarity.events.AttributeEvents;
@@ -26,7 +27,7 @@ import java.util.Set;
 
 /**
  * D'où viennent les stats de la fiche : une ligne par source (pièce portée, panoplie, accessoire, reste),
- * avec l'icône de l'objet (voir StatDetailTooltip pour l'affichage).
+ * avec l'icône de l'objet, pour l'infobulle d'une stat.
  */
 final class StatSources {
     private StatSources() {}
@@ -41,15 +42,15 @@ final class StatSources {
      * D'où vient une stat : chaque pièce portée, chaque panoplie, chaque accessoire, puis le reste
      * (effets de potion, autres mods) regroupé. Une ligne par source, la plus forte en premier.
      */
-    static List<StatDetail> sources(LivingEntity player, StatDefinition stat, AttributeInstance instance) {
+    static List<Elem> sources(LivingEntity player, StatDefinition stat, AttributeInstance instance) {
         List<Source> sources = collect(player, stat, instance);
         if (sources.isEmpty()) {
-            return List.of(new StatDetail.Text(Component.translatable("panel.kpitemsrarity.source.none").withStyle(ChatFormatting.DARK_GRAY)));
+            return List.of(PanelRows.text(Component.translatable("panel.kpitemsrarity.source.none").withStyle(ChatFormatting.DARK_GRAY)));
         }
         sources.sort((a, b) -> Integer.compare(Math.abs(b.points()), Math.abs(a.points())));
-        List<StatDetail> out = new ArrayList<>();
-        for (Source src : sources.subList(0, Math.min(MAX_SOURCES, sources.size()))) out.add(detail(stat, src));
-        if (sources.size() > MAX_SOURCES) out.add(new StatDetail.Text(Component.literal("…").withStyle(ChatFormatting.DARK_GRAY)));
+        List<Elem> out = new ArrayList<>();
+        for (Source src : sources.subList(0, Math.min(MAX_SOURCES, sources.size()))) out.add(line(stat, src));
+        if (sources.size() > MAX_SOURCES) out.add(PanelRows.text(Component.literal("…").withStyle(ChatFormatting.DARK_GRAY)));
         return out;
     }
 
@@ -79,11 +80,10 @@ final class StatSources {
     }
 
     /** "+3  [icône] Casque en bois", vert pour un bonus, rouge pour un malus. */
-    private static StatDetail detail(StatDefinition stat, Source src) {
+    private static Elem line(StatDefinition stat, Source src) {
         int color = src.points() < 0 ? MALUS : BONUS;
         Component value = Component.literal(stat.formatValue(src.points(), true)).withStyle(st -> st.withColor(color));
-        Component name = src.name().copy().withStyle(ChatFormatting.GRAY);
-        return new StatDetail.Source(value, src.icons(), name, value.getString().startsWith("-"));
+        return new Elem.ItemLine(value, src.icons(), src.name().copy().withStyle(ChatFormatting.GRAY), color);
     }
 
     private static List<ItemStack> one(ItemStack stack) {

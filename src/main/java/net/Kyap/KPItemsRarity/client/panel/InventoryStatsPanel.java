@@ -1,7 +1,13 @@
 package net.Kyap.KPItemsRarity.client.panel;
 
 import net.Kyap.KPItemsRarity.KPItemsRarity;
+import net.Kyap.KPItemsRarity.client.tooltip.card.Card;
+import net.Kyap.KPItemsRarity.client.tooltip.card.FrameStyle;
+import net.Kyap.KPItemsRarity.client.tooltip.card.LiveCard;
+import net.Kyap.KPItemsRarity.client.tooltip.card.Palette;
 import net.Kyap.KPItemsRarity.client.tooltip.setcard.SetCard;
+import net.Kyap.KPItemsRarity.client.tooltip.text.Texts;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -27,7 +33,6 @@ import net.neoforged.neoforge.client.event.ScreenEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.function.Function;
 
 /**
@@ -62,6 +67,8 @@ public final class InventoryStatsPanel {
     private static final int MALUS = 0xC0392B;
     private static final int ZERO_TEXT = 0x8A8A8A, STRIPE = 0x18000000, DARK = 0xFF373737, MID_GREY = 0xFF8B8B8B;
     private static final int BAND_H = 14, BAND_LIGHT = 0xFFFFFFFF, BAND_FILL = 0xFFB5B5B5;
+    /** L'infobulle d'une stat passe au-dessus de l'inventaire. */
+    private static final int DETAIL_Z = 400;
 
     private static final ResourceLocation HEART = ResourceLocation.withDefaultNamespace("hud/heart/full");
     private static final ResourceLocation ARMOR = ResourceLocation.withDefaultNamespace("hud/armor_full");
@@ -74,10 +81,19 @@ public final class InventoryStatsPanel {
     private static double scroll = 0;
     private static ImageButton button;
 
+    /** Les lignes de la fiche, recalculées au plus 4 fois par seconde : les stats ne changent pas à chaque image. */
+    private static final long ROWS_REFRESH_MS = 250;
+    private static List<PanelRows.Row> rows = List.of();
+    @Nullable private static LivingEntity rowsOf;
+    private static boolean rowsShowAll;
+    private static long rowsBuiltAt;
+
     // État de la dernière image : survol et zone de la ligne "afficher / masquer"
     private static int lastMouseX, lastMouseY;
-    private static String hoverKey;
-    private static List<StatDetail> hoverDetails = List.of();
+    @Nullable private static String hoverKey;
+    /** La ligne de stat survolée, dont l'infobulle s'affiche ; null si aucune. */
+    @Nullable private static PanelRows.StatLine hovered;
+    private static final LiveCard DETAIL = new LiveCard();
     @Nullable private static Rect toggleRect;
 
     /** Un rectangle à l'écran (zone cliquable). */
@@ -183,7 +199,18 @@ public final class InventoryStatsPanel {
         g.drawString(font, title, x + (WIDTH - font.width(title)) / 2, y + 6, TEXT, false);
         int bandY = y + 18;
         drawBand(g, font, entity, x + PAD, x + WIDTH - PAD, bandY);
-        drawRows(g, font, PanelRows.build(entity, showAll), x + PAD, x + WIDTH - PAD, bandY + 18, y + h - PAD);
+        drawRows(g, font, rows(entity), x + PAD, x + WIDTH - PAD, bandY + 18, y + h - PAD);
+    }
+
+    private static List<PanelRows.Row> rows(LivingEntity entity) {
+        long now = Util.getMillis();
+        if (entity != rowsOf || showAll != rowsShowAll || now - rowsBuiltAt > ROWS_REFRESH_MS) {
+            rows = PanelRows.build(entity, showAll);
+            rowsOf = entity;
+            rowsShowAll = showAll;
+            rowsBuiltAt = now;
+        }
+        return rows;
     }
 
     /** Bandeau du haut : Vie, Armure, Dégâts (valeurs totales du personnage), avec leur nom au survol. */
@@ -192,9 +219,9 @@ public final class InventoryStatsPanel {
         g.fill(left, bandY + 1, innerRight + 1, bandY + BAND_H, BAND_LIGHT);
         g.fill(left, bandY + 1, innerRight, bandY + BAND_H - 1, BAND_FILL);
         List<BandCell> cells = List.of(
-                new BandCell("panel.kpitemsrarity.health", HEART, null, number(entity.getMaxHealth())),
-                new BandCell("panel.kpitemsrarity.armor", ARMOR, null, number(entity.getArmorValue())),
-                new BandCell("panel.kpitemsrarity.damage", null, SWORD, number(entity.getAttributeValue(Attributes.ATTACK_DAMAGE))));
+                new BandCell("panel.kpitemsrarity.health", HEART, null, Texts.number(entity.getMaxHealth())),
+                new BandCell("panel.kpitemsrarity.armor", ARMOR, null, Texts.number(entity.getArmorValue())),
+                new BandCell("panel.kpitemsrarity.damage", null, SWORD, Texts.number(entity.getAttributeValue(Attributes.ATTACK_DAMAGE))));
         int cellW = (innerRight - left) / cells.size();
         hoverKey = null;
         for (int i = 0; i < cells.size(); i++) {
@@ -227,7 +254,7 @@ public final class InventoryStatsPanel {
         scroll = Mth.clamp(scroll, 0, maxScroll);
 
         int right = innerRight - (maxScroll > 0 ? 4 : 0);
-        hoverDetails = List.of();
+        hovered = null;
         toggleRect = null;
         g.enableScissor(left - 1, top, right + 1, bottom);
         int rowY = top - (int) scroll;
@@ -239,7 +266,7 @@ public final class InventoryStatsPanel {
                 drawRow(g, font, row, left, right, rowY, stripe++ % 2 == 1);
                 int visibleTop = Math.max(rowY, top), visibleBottom = Math.min(rowY + ROW, bottom);
                 if (row instanceof PanelRows.StatLine line && !line.details().isEmpty()
-                        && isHovering(left, visibleTop, right - left, visibleBottom - visibleTop)) hoverDetails = line.details();
+                        && isHovering(left, visibleTop, right - left, visibleBottom - visibleTop)) hovered = line;
             }
             rowY += ROW;
         }
@@ -308,15 +335,12 @@ public final class InventoryStatsPanel {
         if (!open || PanelScreens.panelScreen(event.getScreen()) == null || SetCard.isOpen()) return;
         if (hoverKey != null) {
             event.getGuiGraphics().renderTooltip(Minecraft.getInstance().font, Component.translatable(hoverKey), event.getMouseX(), event.getMouseY());
-        } else if (!hoverDetails.isEmpty()) {
-            StatDetailTooltip.render(event.getGuiGraphics(), Minecraft.getInstance().font, hoverDetails, event.getMouseX(), event.getMouseY());
+        } else if (hovered != null) {
+            PanelRows.StatLine line = hovered;
+            DETAIL.render(event.getGuiGraphics(), Minecraft.getInstance().font, line.id(),
+                    () -> new Card(Card.Header.NONE, line.details(), null, FrameStyle.plain(Palette.TEXT_FAINT)),
+                    event.getMouseX(), event.getMouseY(), DETAIL_Z);
         }
-    }
-
-    private static String number(double value) {
-        return Math.abs(value - Math.round(value)) < 0.05
-                ? String.valueOf(Math.round(value))
-                : String.format(Locale.ROOT, "%.1f", value);
     }
 
     /** Couleur plus sombre pour rester lisible sur le fond gris clair. */
