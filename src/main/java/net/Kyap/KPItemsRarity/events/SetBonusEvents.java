@@ -126,12 +126,10 @@ public final class SetBonusEvents {
         }
         worn.forEach((key, stack) -> {
             var def = RarityData.itemDef(stack);
-            if (def == null || !def.hasConditions() || Conditions.met(entity, def)) return;
+            if (def == null || Conditions.met(entity, def)) return;
             var stats = ItemRolls.stats(stack);
             if (stats == null) return;
-            Map<String, Integer> points = new LinkedHashMap<>(stats.lines());
-            if (stats.hasExo()) points.merge(stats.exoStat(), stats.exoValue(), Integer::sum);
-            points.forEach((statId, value) -> {
+            stats.pointsWithExo().forEach((statId, value) -> {
                 StatDefinition stat = RarityData.stat(statId);
                 if (stat == null || stat.base || value == 0) return;
                 stat.attributeHolder().ifPresent(attribute -> {

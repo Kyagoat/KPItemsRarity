@@ -45,9 +45,9 @@ public final class EquippedStats {
         for (ItemStack stack : worn) {
             ItemStats stats = ItemRolls.stats(stack);
             if (stats == null || !Conditions.met(entity, RarityData.itemDef(stack))) continue;
-            stats.lines().forEach((stat, value) -> {
-                StatDefinition sd = RarityData.stat(stat);
-                if (sd == null || !sd.base) totals.merge(stat, value, Integer::sum);
+            stats.lines().forEach((statId, points) -> {
+                StatDefinition stat = RarityData.stat(statId);
+                if (stat == null || !stat.base) totals.merge(statId, points, Integer::sum); // la ligne de base (Dégâts) n'est pas un bonus
             });
             if (stats.hasExo()) totals.merge(stats.exoStat(), stats.exoValue(), Integer::sum);
         }

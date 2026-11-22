@@ -64,6 +64,14 @@ public record ItemStats(Map<String, Integer> lines, String exoStat, int exoValue
         return lines.getOrDefault(stat, 0);
     }
 
+    /** Les points de chaque stat, ligne exotique comprise (elle s'ajoute à la ligne de la même stat, s'il y en a une). */
+    public Map<String, Integer> pointsWithExo() {
+        if (!hasExo()) return lines;
+        Map<String, Integer> points = new LinkedHashMap<>(lines);
+        points.merge(exoStat, exoValue, Integer::sum);
+        return points;
+    }
+
     public ItemStats withLine(String stat, int value) {
         Map<String, Integer> copy = new LinkedHashMap<>(lines);
         copy.put(stat, value);
