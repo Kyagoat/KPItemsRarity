@@ -1,9 +1,0 @@
-{
-  "panel": "kpitemsrarity:legendary",
-  "frame": "kpitemsrarity:legendary",
-  "icon": "obscure_tooltips:default",
-  "effects": [
-    "kpitemsrarity:legendary_ray_glow",
-    "kpitemsrarity:legendary_icon_particles"
-  ]
-}

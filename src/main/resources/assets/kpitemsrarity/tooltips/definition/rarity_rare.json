@@ -1,8 +1,0 @@
-{
-  "priority": 1000,
-  "style": "kpitemsrarity:rarity/rare",
-  "filter": {
-    "type": "obscure_tooltips:rarity",
-    "rarity": "rare"
-  }
-}
