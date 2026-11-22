@@ -31,9 +31,10 @@ public final class Passives {
     /** Un soin donné par un passif (partage) ne relance pas les passifs. */
     private static boolean passiveHealing;
 
+    /** Retient les critiques de mêlée pour les passifs qui en dépendent (le coup est joué des deux côtés : serveur seul). */
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onCrit(CriticalHitEvent event) {
-        if (event.isCriticalHit()) CritTracker.record(event.getEntity());
+        if (event.isCriticalHit() && !event.getEntity().level().isClientSide()) CritTracker.record(event.getEntity());
     }
 
     /** Le joueur frappe (avant armure). */

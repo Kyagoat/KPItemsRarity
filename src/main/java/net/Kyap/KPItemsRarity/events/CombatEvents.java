@@ -31,6 +31,7 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerXpEvent;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -164,8 +165,11 @@ public final class CombatEvents {
         if (mult != 1.0) arrow.setBaseDamage(arrow.getBaseDamage() * mult);
     }
 
-    /** Vitesse d'armement : l'arc se bande (l'arbalète se charge) plus vite. Côté client et serveur. */
-    private static final Map<LivingEntity, Float> DRAW_PROGRESS = new WeakHashMap<>();
+    /**
+     * Vitesse d'armement : l'arc se bande (l'arbalète se charge) plus vite. Côté client ET serveur, qui tournent sur
+     * deux fils en solo : la table est donc protégée. Elle garde la fraction de tick gagnée d'un tick à l'autre.
+     */
+    private static final Map<LivingEntity, Float> DRAW_PROGRESS = Collections.synchronizedMap(new WeakHashMap<>());
 
     @SubscribeEvent
     public static void onUseTick(LivingEntityUseItemEvent.Tick event) {

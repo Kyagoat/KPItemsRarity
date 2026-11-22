@@ -5,7 +5,7 @@ import net.minecraft.world.entity.LivingEntity;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-/** Coups critiques de mêlée du tick en cours (armor_ignore et crit_explosion en dépendent). */
+/** Coups critiques de mêlée du tick en cours, côté serveur (armor_ignore et crit_explosion en dépendent). */
 public final class CritTracker {
     private CritTracker() {}
 
