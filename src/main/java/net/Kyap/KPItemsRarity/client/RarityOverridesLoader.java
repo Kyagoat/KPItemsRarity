@@ -19,7 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /** Charge assets/<mod>/kp_rarity/*.json (voir RarityOverrides). */
-@EventBusSubscriber(modid = KPItemsRarity.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = KPItemsRarity.MOD_ID, value = Dist.CLIENT)
 public final class RarityOverridesLoader extends SimplePreparableReloadListener<Map<String, String>> {
 
     private static final FileToIdConverter FILES = FileToIdConverter.json("kp_rarity");
