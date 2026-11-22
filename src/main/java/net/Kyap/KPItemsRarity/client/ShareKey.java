@@ -60,7 +60,6 @@ public final class ShareKey {
 
         Slot slot = screen.getSlotUnderMouse();
         if (slot == null || !slot.hasItem()) {
-            hint();
             event.setCanceled(true);
             return;
         }
@@ -78,16 +77,7 @@ public final class ShareKey {
         Minecraft mc = Minecraft.getInstance();
         while (SHARE.consumeClick()) {
             if (mc.player == null || mc.screen != null) continue;
-            if (mc.player.getMainHandItem().isEmpty()) {
-                hint();
-                continue;
-            }
             PacketDistributor.sendToServer(ShareItemPayload.held());
         }
-    }
-
-    private static void hint() {
-        var player = Minecraft.getInstance().player;
-        if (player != null) player.displayClientMessage(Component.translatable("chat.kpitemsrarity.share_hint"), true);
     }
 }

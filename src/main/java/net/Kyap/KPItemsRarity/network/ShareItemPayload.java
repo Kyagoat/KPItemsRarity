@@ -64,15 +64,7 @@ public record ShareItemPayload(int containerId, int slot, ItemStack creativeStac
             return;
         }
 
-        ItemStack stack = ItemStack.EMPTY;
-        AbstractContainerMenu menu = player.containerMenu;
-        if (payload.containerId() == CREATIVE) {
-            if (player.isCreative()) stack = payload.creativeStack();
-        } else if (payload.containerId() == HELD) {
-            stack = player.getMainHandItem();
-        } else if (menu.containerId == payload.containerId() && payload.slot() >= 0 && payload.slot() < menu.slots.size()) {
-            stack = menu.getSlot(payload.slot()).getItem();
-        }
+        ItemStack stack = getItemStack(payload, player);
         if (stack.isEmpty()) {
             KPItemsRarity.LOGGER.debug("Partage refusé pour {} : objet introuvable ({} / {})",
                     player.getGameProfile().getName(), payload.containerId(), payload.slot());
@@ -82,5 +74,27 @@ public record ShareItemPayload(int containerId, int slot, ItemStack creativeStac
         LAST_SHARE.put(player.getUUID(), now);
         player.server.getPlayerList().broadcastSystemMessage(
                 Component.translatable("chat.kpitemsrarity.share", player.getDisplayName(), stack.getDisplayName()), false);
+    }
+
+    private static ItemStack getItemStack(ShareItemPayload payload, ServerPlayer player) {
+        ItemStack stack = ItemStack.EMPTY;
+        AbstractContainerMenu menu = player.containerMenu;
+        return switch (payload.containerId()) {
+            case CREATIVE -> {
+                if (player.isCreative()) stack = payload.creativeStack();
+                yield stack;
+            }
+            case HELD -> {
+                stack = player.getMainHandItem();
+                yield stack;
+            }
+            default -> {
+                if (menu.containerId == payload.containerId() && payload.slot() >= 0 && payload.slot() < menu.slots.size()) {
+                    stack = menu.getSlot(payload.slot()).getItem();
+                    yield stack;
+                }
+                yield stack;
+            }
+        };
     }
 }
