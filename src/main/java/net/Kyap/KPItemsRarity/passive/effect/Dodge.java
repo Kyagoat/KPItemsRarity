@@ -29,7 +29,7 @@ public final class Dodge implements PassiveEffect {
     @Override
     public boolean onDefend(Defense hit, PassiveDefinition p) {
         Player victim = hit.victim();
-        if (p.flag("no_rain") && victim.isInWaterOrRain()) return false;
+        if (isWaiting(victim, p)) return false;
         double chance = Math.min(p.num("max", 0.5), p.num("per_point", 0.005) * PassiveStats.points(victim, p.str("stat", "agility")));
         if (chance <= 0 || victim.getRandom().nextDouble() >= chance) return false;
         hit.event().setCanceled(true);
@@ -39,6 +39,12 @@ public final class Dodge implements PassiveEffect {
         }
         if (hit.source().getEntity() instanceof LivingEntity attacker) counter(victim, attacker, p);
         return true;
+    }
+
+    /** "no_rain" : pas d'esquive mouillé (pluie ou eau). */
+    @Override
+    public boolean isWaiting(Player wearer, PassiveDefinition p) {
+        return p.flag("no_rain") && wearer.isInWaterOrRain();
     }
 
     private static void counter(Player victim, LivingEntity attacker, PassiveDefinition p) {

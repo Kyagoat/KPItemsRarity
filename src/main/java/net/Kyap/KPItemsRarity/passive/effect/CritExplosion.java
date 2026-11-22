@@ -18,10 +18,15 @@ public final class CritExplosion implements PassiveEffect {
     @Override
     public void onAttack(Attack hit, PassiveDefinition p) {
         Player attacker = hit.attacker();
-        if (!hit.melee() || !CritTracker.critNow(attacker) || attacker.getHealth() > p.num("max_health", 2.0)
-                || !PassiveCooldowns.ready(attacker, p)) return;
+        if (!hit.melee() || !CritTracker.critNow(attacker) || isWaiting(attacker, p) || !PassiveCooldowns.ready(attacker, p)) return;
         LivingEntity target = hit.target();
         attacker.level().explode(attacker, target.getX(), target.getY(0.5), target.getZ(),
                 (float) p.num("radius", 2.5), Level.ExplosionInteraction.NONE);
+    }
+
+    /** N'agit que sous max_health PV. */
+    @Override
+    public boolean isWaiting(Player wearer, PassiveDefinition p) {
+        return wearer.getHealth() > p.num("max_health", 2.0);
     }
 }

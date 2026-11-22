@@ -49,6 +49,14 @@ public interface PassiveEffect {
         return false;
     }
 
+    /**
+     * Pour l'infobulle : le passif est porté, mais sa condition n'est pas remplie en ce moment (vie trop haute,
+     * hors de l'eau, sous la pluie...). Il agira dès qu'elle le sera.
+     */
+    default boolean isWaiting(Player wearer, PassiveDefinition p) {
+        return false;
+    }
+
     // ---------------------------------------------------------------- Ce que reçoit chaque moment
 
     /** "arrow" ou "projectile" : un tir ; "melee" : un coup direct ; autre chose ("any") : tout. */

@@ -26,4 +26,11 @@ public final class LifeSteal implements PassiveEffect {
         if (amount > 0) attacker.setHealth(Math.min(attacker.getMaxHealth(), attacker.getHealth() + amount));
         return false;
     }
+
+    /** Sans ratio de base, il n'agit que sous below_health : en attente au-dessus. */
+    @Override
+    public boolean isWaiting(Player wearer, PassiveDefinition p) {
+        double threshold = p.num("below_health", 0);
+        return p.num("ratio", 0) <= 0 && threshold > 0 && wearer.getHealth() > wearer.getMaxHealth() * threshold;
+    }
 }
