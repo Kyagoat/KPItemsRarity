@@ -13,7 +13,7 @@ import java.util.Map;
  *   "items": ["minecraft:iron_sword"],
  *   "tier": 2,
  *   "rarity": "common",          (rareté MINIMUM ; la vraie dépend des jets et des crans de forge)
- *   "set": "kpitemsrarity:iron_guard",
+ *   "set": "kpitemsrarity:iron",
  *   "stats": { "strength": [6, 10], "critical": [1, 2] },
  *   "conditions": { "max_armor": 8 }   (facultatif)
  * }

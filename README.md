@@ -38,7 +38,7 @@ pulses for Legendary and Mythic. It replaces Obscure Tooltips for equipment only
 Every lore text lives in the language files `src/main/resources/assets/kpitemsrarity/lang/fr_fr.json` / `en_us.json`:
 
 - item: `lore.<mod>.<item>` (e.g. `lore.minecraft.iron_sword`), shown at the bottom of the tooltip;
-- set: `lore.set.<mod>.<set>` (e.g. `lore.set.kpitemsrarity.iron_guard`), shown at the bottom of the set card.
+- set: `lore.set.<mod>.<set>` (e.g. `lore.set.kpitemsrarity.iron`), shown at the bottom of the set card.
 
 A `"lore"` field in a `kp_items` or `kp_sets` JSON overrides it (translation key or plain text). No key = no lore.
 All the logic is in `client/LoreText.java`.
@@ -68,12 +68,12 @@ to see their names. Thresholds are **totals** (with 4 pieces you get the "4" bon
 
 | Set | Pieces | Tier | Playstyle |
 |---|---|---|---|
-| Prowler (`rodeur`) | leather + bow | 1 | mobile archer |
-| Scout (`eclaireur`) | chainmail + crossbow | 2 | critical hits, mobility |
-| Gold Panner (`orpailleur`) | gold + golden pickaxe | 2 | luck, wisdom (XP), harvesting |
-| Iron Guard (`iron_guard`) | iron + shield | 2 | health, guard and stamina (KPBlockStamina) |
-| Champion (`champion`) | diamond + diamond sword | 3 | strength, health, critical hits |
-| Nether Lord (`nether_lord`) | netherite + netherite sword | 4 | strength, life steal, fire resistance |
+| Leather (`leather`) | leather + bow | 1 | mobile archer |
+| Chainmail (`chainmail`) | chainmail + crossbow | 2 | critical hits, mobility |
+| Golden (`golden`) | gold + golden pickaxe | 2 | luck, wisdom (XP), harvesting |
+| Iron (`iron`) | iron + shield | 2 | health, guard and stamina (KPBlockStamina) |
+| Diamond (`diamond`) | diamond + diamond sword | 3 | strength, health, critical hits |
+| Netherite (`netherite`) | netherite + netherite sword | 4 | strength, life steal, fire resistance |
 
 ### Character sheet
 
@@ -133,7 +133,7 @@ Item:
   "items": ["minecraft:iron_sword"],
   "tier": 2,
   "rarity": "common",
-  "set": "kpitemsrarity:iron_guard",
+  "set": "kpitemsrarity:iron",
   "stats": { "strength": [6, 10], "critical": [1, 2] }
 }
 ```

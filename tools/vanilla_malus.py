@@ -17,12 +17,12 @@ PIECE_CAP = {"jump": 8, "attack_speed": 6, "agility": 5, "healing": 10, "fire_re
              "vitality": 2, "resistance": 2, "strength": 8, "wisdom": 30, "arrow_damage": 15}
 # Défaut de chaque panoplie (une pièce qui donne déjà cette stat n'en reçoit pas)
 MALUS = {
-    "kpitemsrarity:rodeur":      "vitality",         # cuir fin : on vise, on ne tient pas
-    "kpitemsrarity:eclaireur":   "vitality",         # mailles légères, éclaireur exposé
-    "kpitemsrarity:iron_guard":  "agility",          # le fer pèse
-    "kpitemsrarity:orpailleur":  "resistance",       # l'or est mou
-    "kpitemsrarity:champion":    "agility",          # le diamant ne court pas
-    "kpitemsrarity:nether_lord": "healing",          # la netherite brûle aussi son porteur
+    "kpitemsrarity:leather":      "vitality",         # cuir fin : on vise, on ne tient pas
+    "kpitemsrarity:chainmail":   "vitality",         # mailles légères, éclaireur exposé
+    "kpitemsrarity:iron":  "agility",          # le fer pèse
+    "kpitemsrarity:golden":  "resistance",       # l'or est mou
+    "kpitemsrarity:diamond":    "agility",          # le diamant ne court pas
+    "kpitemsrarity:netherite": "healing",          # la netherite brûle aussi son porteur
 }
 
 def weights(extra):
