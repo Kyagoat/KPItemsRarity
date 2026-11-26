@@ -5,6 +5,7 @@ import net.Kyap.KPItemsRarity.compat.CuriosCompat;
 import net.Kyap.KPItemsRarity.data.RarityData;
 import net.Kyap.KPItemsRarity.data.SetDefinition;
 import net.Kyap.KPItemsRarity.data.StatDefinition;
+import net.Kyap.KPItemsRarity.passive.Passives;
 import net.Kyap.KPItemsRarity.stats.Conditions;
 import net.Kyap.KPItemsRarity.stats.EquippedStats;
 import net.Kyap.KPItemsRarity.stats.GearSlots;
@@ -105,6 +106,7 @@ public final class SetBonusEvents {
         });
 
         applyConditions(entity);
+        if (entity instanceof Player player) applyPassiveStats(player);
 
         // Les PV max ont pu baisser : on ne garde pas plus de vie que le maximum.
         if (entity.getHealth() > entity.getMaxHealth()) entity.setHealth(entity.getMaxHealth());
@@ -139,6 +141,21 @@ public final class SetBonusEvents {
                     instance.removeModifier(id);
                     instance.addTransientModifier(new AttributeModifier(id, -value * stat.scale, stat.parsedOperation()));
                 });
+            });
+        });
+    }
+
+    /** Points de stat ajoutés par les passifs portés (kpitemsrarity:set/passive/<stat>), comme un bonus de panoplie. */
+    private static void applyPassiveStats(Player player) {
+        Map<String, Double> points = new LinkedHashMap<>();
+        Passives.onRefresh(player, (statId, value) -> points.merge(statId, value, Double::sum));
+        points.forEach((statId, value) -> {
+            StatDefinition stat = RarityData.stat(statId);
+            if (stat == null || value == 0) return;
+            stat.attributeHolder().ifPresent(attribute -> {
+                AttributeInstance instance = player.getAttributes().getInstance(attribute);
+                if (instance != null) instance.addTransientModifier(new AttributeModifier(
+                        KPItemsRarity.id(SET_PREFIX + "passive/" + statId), value * stat.scale, stat.parsedOperation()));
             });
         });
     }

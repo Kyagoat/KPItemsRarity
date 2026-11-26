@@ -36,7 +36,7 @@ public final class ActivePassives {
         return entity instanceof Player ? new ActivePassives(list(entity)) : NONE;
     }
 
-    /** Les passifs actifs, dans l'ordre des objets puis des panoplies (sans doublon). */
+    /** Les passifs actifs, dans l'ordre des objets puis des panoplies (sans doublon), chacun suivi de ses autres effets. */
     public static List<PassiveDefinition> list(LivingEntity entity) {
         Set<String> ids = new LinkedHashSet<>();
         List<ItemStack> worn = new ArrayList<>(GearSlots.wornGear(entity));
@@ -52,7 +52,9 @@ public final class ActivePassives {
         List<PassiveDefinition> out = new ArrayList<>();
         for (String id : ids) {
             PassiveDefinition p = RarityData.passive(id);
-            if (p != null) out.add(p);
+            if (p == null) continue;
+            out.add(p);
+            out.addAll(p.and);
         }
         return out;
     }

@@ -96,11 +96,17 @@ final class PassiveRows {
         return effect != null && effect.isWaiting(player, passive);
     }
 
-    /** Maj : les réglages bruts du passif, "life_steal · ratio 0.2 · cooldown 10 s". */
+    /** Maj : les réglages bruts du passif, "life_steal · ratio 0.2 · cooldown 10 s" (et ses autres effets après un "+"). */
     private static Component formula(PassiveDefinition passive) {
-        StringBuilder text = new StringBuilder(passive.effect);
-        passive.params.entrySet().forEach(param -> text.append(" · ").append(param.getKey()).append(' ').append(param.getValue().getAsString()));
+        StringBuilder text = new StringBuilder();
+        appendEffect(text, passive);
+        for (PassiveDefinition part : passive.and) appendEffect(text.append(" + "), part);
         if (passive.cooldown > 0) text.append(" · cooldown ").append((int) passive.cooldown).append(" s");
         return Component.literal(text.toString());
+    }
+
+    private static void appendEffect(StringBuilder text, PassiveDefinition effect) {
+        text.append(effect.effect);
+        effect.params.entrySet().forEach(param -> text.append(" · ").append(param.getKey()).append(' ').append(param.getValue().getAsString()));
     }
 }

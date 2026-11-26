@@ -4,6 +4,7 @@ import net.Kyap.KPItemsRarity.data.PassiveDefinition;
 import net.Kyap.KPItemsRarity.passive.CritTracker;
 import net.Kyap.KPItemsRarity.passive.PassiveEffect;
 import net.Kyap.KPItemsRarity.passive.PassiveStats;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 
@@ -13,7 +14,9 @@ import java.util.WeakHashMap;
 /**
  * armor_ignore : le coup ignore une partie de l'armure de la cible.
  * Réglages : flat (points), stat + per (1 point par "per" points de stat), crit_only (seulement sur un
- * critique de mêlée), every_nth (le n-ième coup d'affilée sur la même cible ignore toute l'armure).
+ * coup critique, de mêlée ou tiré), every_nth (le n-ième coup d'affilée sur la même cible ignore toute l'armure),
+ * falling (un coup de mêlée porté en chute, comme l'écrasement de la masse, ignore toute l'armure), weapon (seulement
+ * avec cette arme en main, "minecraft:mace").
  */
 public final class ArmorIgnore implements PassiveEffect {
     /** Coups d'affilée d'un attaquant sur la même cible. */
@@ -26,6 +29,8 @@ public final class ArmorIgnore implements PassiveEffect {
 
     /** Assez pour ignorer toute l'armure. */
     private static final double ALL_ARMOR = 1024;
+    /** Hauteur de chute à partir de laquelle un coup de masse vanilla écrase (MaceItem). */
+    private static final double FALL_SMASH = 1.5;
 
     @Override
     public String id() {
@@ -35,7 +40,8 @@ public final class ArmorIgnore implements PassiveEffect {
     @Override
     public void onAttack(Attack hit, PassiveDefinition p) {
         if (!hit.melee() && !hit.projectile()) return;
-        boolean crit = hit.melee() && CritTracker.critNow(hit.attacker());
+        if (!holdsWeapon(hit.attacker(), p.str("weapon", ""))) return;
+        boolean crit = CritTracker.critNow(hit.attacker());
         double ignore = 0;
         if (!p.flag("crit_only") || crit) {
             ignore += p.num("flat", 0);
@@ -44,7 +50,14 @@ public final class ArmorIgnore implements PassiveEffect {
         }
         int nth = (int) p.num("every_nth", 0);
         if (nth > 0 && nthHit(hit.attacker(), hit.target(), nth)) ignore = ALL_ARMOR;
+        if (p.flag("falling") && hit.melee() && hit.attacker().fallDistance > FALL_SMASH) ignore = ALL_ARMOR;
         if (ignore > 0) ignoreArmor(hit, ignore);
+    }
+
+    /** Pas d'arme exigée, ou l'arme en main est celle-là. */
+    private static boolean holdsWeapon(LivingEntity attacker, String weapon) {
+        if (weapon.isEmpty()) return true;
+        return BuiltInRegistries.ITEM.getKey(attacker.getMainHandItem().getItem()).toString().equals(weapon);
     }
 
     /** Compte les coups d'affilée sur la cible ; true au n-ième (et le compte repart). */

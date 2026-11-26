@@ -1,6 +1,7 @@
 package net.Kyap.KPItemsRarity.passive.effect;
 
 import net.Kyap.KPItemsRarity.data.PassiveDefinition;
+import net.Kyap.KPItemsRarity.passive.CritTracker;
 import net.Kyap.KPItemsRarity.passive.PassiveCooldowns;
 import net.Kyap.KPItemsRarity.passive.PassiveEffect;
 import net.Kyap.KPItemsRarity.passive.PassiveStats;
@@ -18,7 +19,7 @@ import net.minecraft.world.phys.Vec3;
 /**
  * dodge : chance d'esquiver le coup = per_point × points de stat (au plus max). Réglages : stat, per_point, max,
  * no_rain (pas sous la pluie), on_dodge = slow (ralentit l'attaquant "duration" s) ou teleport_behind
- * (passe "distance" blocs derrière lui, soumis à la recharge).
+ * (passe "distance" blocs derrière lui, soumis à la recharge) ; next_crit : ton coup suivant est un critique.
  */
 public final class Dodge implements PassiveEffect {
     @Override
@@ -29,7 +30,7 @@ public final class Dodge implements PassiveEffect {
     @Override
     public boolean onDefend(Defense hit, PassiveDefinition p) {
         Player victim = hit.victim();
-        if (isWaiting(victim, p)) return false;
+        if (hit.source().getEntity() == null || isWaiting(victim, p)) return false; // on n'esquive pas le feu ni la chute
         double chance = Math.min(p.num("max", 0.5), p.num("per_point", 0.005) * PassiveStats.points(victim, p.str("stat", "agility")));
         if (chance <= 0 || victim.getRandom().nextDouble() >= chance) return false;
         hit.event().setCanceled(true);
@@ -38,6 +39,7 @@ public final class Dodge implements PassiveEffect {
             level.sendParticles(ParticleTypes.CLOUD, victim.getX(), victim.getY() + 1.0, victim.getZ(), 6, 0.3, 0.4, 0.3, 0.02);
         }
         if (hit.source().getEntity() instanceof LivingEntity attacker) counter(victim, attacker, p);
+        if (p.flag("next_crit")) CritTracker.forceNext(victim);
         return true;
     }
 

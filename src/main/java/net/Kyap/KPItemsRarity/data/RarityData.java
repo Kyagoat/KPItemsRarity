@@ -143,7 +143,7 @@ public final class RarityData {
                 store(SET_PIECES, setPieces(items.values()), side);
             }
             case SETS -> store(SETS, Map.copyOf(parseAll(files, SetDefinition.class, SetDefinition::resolve, set -> set.id)), side);
-            case PASSIVES -> store(PASSIVES, Map.copyOf(parseAll(files, PassiveDefinition.class, (passive, key) -> passive.id = key, passive -> passive.id)), side);
+            case PASSIVES -> store(PASSIVES, Map.copyOf(parseAll(files, PassiveDefinition.class, PassiveDefinition::setId, passive -> passive.id)), side);
         }
     }
 

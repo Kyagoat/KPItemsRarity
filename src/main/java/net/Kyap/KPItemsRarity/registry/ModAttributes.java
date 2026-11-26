@@ -43,6 +43,14 @@ public final class ModAttributes {
     public static final DeferredHolder<Attribute, Attribute> HEALING_RECEIVED = register("healing_received", 1.0, 0.0, 10.0);
     /** Part des dégâts de mêlée subis renvoyée à l'attaquant. */
     public static final DeferredHolder<Attribute, Attribute> THORNS = register("thorns", 0.0, 0.0, 1.0);
+    /** Dégâts fixes ajoutés à chaque coup du joueur, mêlée et tirs (Dofus : « Dommages »). */
+    public static final DeferredHolder<Attribute, Attribute> DAMAGE_BONUS = register("damage_bonus", 0.0, 0.0, 1024.0);
+    /** Part des dégâts de projectiles ignorée (0,2 = −20 %). */
+    public static final DeferredHolder<Attribute, Attribute> PROJECTILE_RESISTANCE = register("projectile_resistance", 0.0, 0.0, 1.0);
+    /** Part des dégâts d'explosion ignorée. */
+    public static final DeferredHolder<Attribute, Attribute> EXPLOSION_RESISTANCE = register("explosion_resistance", 0.0, 0.0, 1.0);
+    /** Prospection : chance de butin des monstres en plus (0,5 = +50 %, comme la prospection de Dofus). */
+    public static final DeferredHolder<Attribute, Attribute> PROSPECTING = register("prospecting", 0.0, 0.0, 100.0);
 
     private static DeferredHolder<Attribute, Attribute> register(String name, double base, double min, double max) {
         return ATTRIBUTES.register(name, () -> new RangedAttribute("attribute.kpitemsrarity." + name, base, min, max).setSyncable(true));

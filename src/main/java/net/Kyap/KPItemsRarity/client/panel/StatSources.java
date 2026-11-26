@@ -125,6 +125,7 @@ final class StatSources {
     }
 
     private static Component setSource(LivingEntity player, String path) {
+        if (path.startsWith(SetBonusEvents.SET_PREFIX + "passive/")) return Component.translatable("panel.kpitemsrarity.source.passive");
         // set/<namespace>_<set>/<stat> : on retrouve la panoplie portée qui correspond
         for (var entry : EquippedStats.countSetPieces(player).entrySet()) {
             var set = RarityData.set(entry.getKey());

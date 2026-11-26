@@ -2,6 +2,7 @@ package net.Kyap.KPItemsRarity.events;
 
 import net.Kyap.KPItemsRarity.Config;
 import net.Kyap.KPItemsRarity.KPItemsRarity;
+import net.Kyap.KPItemsRarity.passive.CritTracker;
 import net.Kyap.KPItemsRarity.registry.ModAttributes;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
@@ -28,6 +29,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerXpEvent;
 
@@ -59,7 +61,7 @@ public final class CombatEvents {
     public static void onCriticalHit(CriticalHitEvent event) {
         Player player = event.getEntity();
         boolean vanilla = event.isVanillaCritical() && !Config.DISABLE_VANILLA_CRITS.get();
-        boolean crit = vanilla || player.getRandom().nextDouble() < value(player, ModAttributes.CRIT_CHANCE);
+        boolean crit = CritTracker.consumeForced(player) || vanilla || player.getRandom().nextDouble() < value(player, ModAttributes.CRIT_CHANCE);
         event.setCriticalHit(crit);
         if (crit) event.setDamageMultiplier((float) value(player, ModAttributes.CRIT_DAMAGE));
     }
@@ -83,16 +85,58 @@ public final class CombatEvents {
 
     @SubscribeEvent
     public static void onIncomingDamage(LivingIncomingDamageEvent event) {
+        resistances(event);
         if (!(event.getSource().getEntity() instanceof LivingEntity attacker)) return;
+        flatDamage(event, attacker);
         projectileCrit(event, attacker);
         armorPierce(event, attacker);
+    }
+
+    // ---------------------------------------------------------------- Dégâts fixes, résistances
+
+    /** Force de la frappe du joueur au moment de son coup (le temps de recharge vanilla), notée juste avant les dégâts. */
+    private static final Map<Player, Float> SWING = new WeakHashMap<>();
+
+    @SubscribeEvent
+    public static void onAttack(AttackEntityEvent event) {
+        SWING.put(event.getEntity(), event.getEntity().getAttackStrengthScale(0.5f));
+    }
+
+    /**
+     * Dégâts fixes : ajoutés aux coups et aux tirs du joueur. En mêlée, un coup donné avant la fin de la recharge n'en
+     * reçoit qu'une part (même règle que les dégâts vanilla), sinon cliquer vite suffirait.
+     */
+    private static void flatDamage(LivingIncomingDamageEvent event, LivingEntity attacker) {
+        if (!(attacker instanceof Player player)) return;
+        double bonus = value(player, ModAttributes.DAMAGE_BONUS);
+        if (bonus <= 0) return;
+        DamageSource source = event.getSource();
+        if (source.getDirectEntity() == player) {
+            float swing = SWING.getOrDefault(player, 1f);
+            bonus *= 0.2 + 0.8 * swing * swing;
+        } else if (!(source.getDirectEntity() instanceof Projectile)) {
+            return;
+        }
+        event.setAmount((float) (event.getAmount() + bonus));
+    }
+
+    /** Résistances aux projectiles et aux explosions du joueur frappé. */
+    private static void resistances(LivingIncomingDamageEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+        DamageSource source = event.getSource();
+        double resist = 0;
+        if (source.is(DamageTypeTags.IS_PROJECTILE)) resist = value(player, ModAttributes.PROJECTILE_RESISTANCE);
+        else if (source.is(DamageTypeTags.IS_EXPLOSION)) resist = value(player, ModAttributes.EXPLOSION_RESISTANCE);
+        if (resist > 0) event.setAmount((float) (event.getAmount() * Math.max(0.0, 1 - resist)));
     }
 
     /** Critique des projectiles (le corps à corps passe par CriticalHitEvent) : mêmes chance et dégâts, même son. */
     private static void projectileCrit(LivingIncomingDamageEvent event, LivingEntity attacker) {
         if (!(attacker instanceof Player player) || !(event.getSource().getDirectEntity() instanceof Projectile)) return;
-        if (player.getRandom().nextDouble() >= value(player, ModAttributes.CRIT_CHANCE)) return;
+        boolean forced = CritTracker.consumeForced(player); // « ton coup suivant est un critique » vaut aussi pour un tir
+        if (!forced && player.getRandom().nextDouble() >= value(player, ModAttributes.CRIT_CHANCE)) return;
         event.setAmount(event.getAmount() * (float) value(player, ModAttributes.CRIT_DAMAGE));
+        CritTracker.record(player);
         LivingEntity target = event.getEntity();
         target.level().playSound(null, target.getX(), target.getY(), target.getZ(),
                 SoundEvents.PLAYER_ATTACK_CRIT, SoundSource.PLAYERS, 1.0f, 1.0f);
