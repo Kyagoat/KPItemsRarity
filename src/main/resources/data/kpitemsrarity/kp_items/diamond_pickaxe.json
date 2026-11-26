@@ -1,9 +1,17 @@
 {
-  "items": ["minecraft:diamond_pickaxe"],
+  "items": [
+    "minecraft:diamond_pickaxe"
+  ],
   "tier": 3,
   "rarity": "common",
   "stats": {
-    "harvest": [16, 24],
-    "wisdom": [4, 8]
+    "harvest": [
+      22,
+      33
+    ],
+    "wisdom": [
+      15,
+      22
+    ]
   }
 }

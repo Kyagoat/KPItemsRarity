@@ -7,16 +7,12 @@
   "set": "kpitemsrarity:diamond",
   "stats": {
     "vitality": [
-      3,
-      4
+      1,
+      2
     ],
-    "knockback_resistance": [
-      3,
-      5
-    ],
-    "agility": [
-      -3,
-      -1
+    "resistance": [
+      1,
+      1
     ]
   }
 }

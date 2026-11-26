@@ -1,9 +1,17 @@
 {
-  "items": ["minecraft:netherite_hoe"],
+  "items": [
+    "minecraft:netherite_hoe"
+  ],
   "tier": 4,
   "rarity": "common",
   "stats": {
-    "wisdom": [45, 60],
-    "harvest": [4, 8]
+    "harvest": [
+      30,
+      45
+    ],
+    "wisdom": [
+      20,
+      30
+    ]
   }
 }

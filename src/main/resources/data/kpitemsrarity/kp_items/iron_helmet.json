@@ -6,17 +6,13 @@
   "rarity": "common",
   "set": "kpitemsrarity:iron",
   "stats": {
-    "vitality": [
+    "resistance": [
       1,
       2
     ],
-    "knockback_resistance": [
-      0,
-      5
-    ],
-    "agility": [
-      -2,
-      -1
+    "vitality": [
+      1,
+      2
     ]
   }
 }

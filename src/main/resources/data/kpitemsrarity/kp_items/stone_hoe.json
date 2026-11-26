@@ -1,9 +1,17 @@
 {
-  "items": ["minecraft:stone_hoe"],
+  "items": [
+    "minecraft:stone_hoe"
+  ],
   "tier": 1,
   "rarity": "common",
   "stats": {
-    "wisdom": [8, 14],
-    "harvest": [0, 2]
+    "harvest": [
+      12,
+      18
+    ],
+    "wisdom": [
+      8,
+      12
+    ]
   }
 }

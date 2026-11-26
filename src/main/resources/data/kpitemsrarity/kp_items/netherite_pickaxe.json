@@ -1,9 +1,17 @@
 {
-  "items": ["minecraft:netherite_pickaxe"],
+  "items": [
+    "minecraft:netherite_pickaxe"
+  ],
   "tier": 4,
   "rarity": "common",
   "stats": {
-    "harvest": [26, 36],
-    "fire_resistance": [10, 20]
+    "harvest": [
+      30,
+      45
+    ],
+    "wisdom": [
+      20,
+      30
+    ]
   }
 }

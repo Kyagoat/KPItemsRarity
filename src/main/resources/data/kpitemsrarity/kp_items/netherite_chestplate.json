@@ -10,17 +10,9 @@
       2,
       3
     ],
-    "life_steal": [
-      0,
+    "toughness": [
+      1,
       1
-    ],
-    "strength": [
-      2,
-      5
-    ],
-    "healing": [
-      -8,
-      -3
     ]
   }
 }

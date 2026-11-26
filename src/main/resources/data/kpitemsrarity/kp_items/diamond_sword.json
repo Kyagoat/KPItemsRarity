@@ -8,23 +8,15 @@
   "stats": {
     "damage": [
       6,
-      8
+      7
     ],
     "strength": [
-      6,
-      10
+      9,
+      13
     ],
     "critical": [
-      2,
-      5
-    ],
-    "critical_damage": [
-      6,
-      12
-    ],
-    "agility": [
-      -3,
-      -1
+      4,
+      6
     ]
   }
 }

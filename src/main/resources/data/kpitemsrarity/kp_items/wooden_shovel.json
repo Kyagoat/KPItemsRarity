@@ -1,9 +1,17 @@
 {
-  "items": ["minecraft:wooden_shovel"],
+  "items": [
+    "minecraft:wooden_shovel"
+  ],
   "tier": 1,
   "rarity": "common",
   "stats": {
-    "harvest": [4, 7],
-    "agility": [0, 1]
+    "harvest": [
+      12,
+      18
+    ],
+    "wisdom": [
+      8,
+      12
+    ]
   }
 }

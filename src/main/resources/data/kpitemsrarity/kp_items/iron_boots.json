@@ -7,20 +7,12 @@
   "set": "kpitemsrarity:iron",
   "stats": {
     "vitality": [
-      0,
-      1
+      1,
+      2
     ],
     "fall": [
       1,
-      4
-    ],
-    "endurance": [
-      3,
-      6
-    ],
-    "agility": [
-      -2,
-      -1
+      1
     ]
   }
 }

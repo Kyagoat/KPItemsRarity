@@ -1,9 +1,17 @@
 {
-  "items": ["minecraft:diamond_shovel"],
+  "items": [
+    "minecraft:diamond_shovel"
+  ],
   "tier": 3,
   "rarity": "common",
   "stats": {
-    "harvest": [16, 22],
-    "agility": [1, 2]
+    "harvest": [
+      22,
+      33
+    ],
+    "wisdom": [
+      15,
+      22
+    ]
   }
 }

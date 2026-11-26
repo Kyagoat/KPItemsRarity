@@ -1,0 +1,12 @@
+{
+  "attribute": "kpitemsrarity:projectile_resistance",
+  "operation": "add_value",
+  "scale": 0.01,
+  "format": "percent",
+  "color": "#9AB8E0",
+  "category": "defense",
+  "order": 118,
+  "rune_power": 1,
+  "exo": true,
+  "weight": 0.75
+}

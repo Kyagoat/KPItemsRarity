@@ -1,9 +1,17 @@
 {
-  "items": ["minecraft:netherite_shovel"],
+  "items": [
+    "minecraft:netherite_shovel"
+  ],
   "tier": 4,
   "rarity": "common",
   "stats": {
-    "harvest": [26, 34],
-    "agility": [2, 3]
+    "harvest": [
+      30,
+      45
+    ],
+    "wisdom": [
+      20,
+      30
+    ]
   }
 }

@@ -1,9 +1,17 @@
 {
-  "items": ["minecraft:iron_pickaxe"],
+  "items": [
+    "minecraft:iron_pickaxe"
+  ],
   "tier": 2,
   "rarity": "common",
   "stats": {
-    "harvest": [10, 16],
-    "wisdom": [0, 3]
+    "harvest": [
+      16,
+      25
+    ],
+    "wisdom": [
+      11,
+      16
+    ]
   }
 }

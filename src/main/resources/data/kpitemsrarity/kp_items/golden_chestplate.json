@@ -6,21 +6,13 @@
   "rarity": "common",
   "set": "kpitemsrarity:golden",
   "stats": {
-    "vitality": [
-      0,
-      1
-    ],
     "luck": [
-      0,
-      1
+      8,
+      12
     ],
-    "wisdom": [
-      3,
-      5
-    ],
-    "resistance": [
-      -1,
-      0
+    "vitality": [
+      1,
+      2
     ]
   }
 }

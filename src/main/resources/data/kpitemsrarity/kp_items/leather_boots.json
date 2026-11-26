@@ -8,15 +8,11 @@
   "stats": {
     "agility": [
       2,
-      3
-    ],
-    "fall": [
-      0,
       2
     ],
-    "vitality": [
-      -1,
-      0
+    "critical": [
+      2,
+      2
     ]
   }
 }

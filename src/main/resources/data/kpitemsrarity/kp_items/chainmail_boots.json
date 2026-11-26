@@ -6,17 +6,13 @@
   "rarity": "common",
   "set": "kpitemsrarity:chainmail",
   "stats": {
-    "agility": [
-      3,
-      3
+    "projectile_resistance": [
+      6,
+      9
     ],
-    "critical": [
-      1,
-      3
-    ],
-    "vitality": [
-      -1,
-      0
+    "knockback_resistance": [
+      6,
+      9
     ]
   }
 }

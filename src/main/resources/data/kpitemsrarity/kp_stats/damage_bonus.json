@@ -1,0 +1,12 @@
+{
+  "attribute": "kpitemsrarity:damage_bonus",
+  "operation": "add_value",
+  "scale": 0.1,
+  "format": "tenths",
+  "color": "#E09A7B",
+  "category": "combat",
+  "order": 12,
+  "rune_power": 1,
+  "exo": true,
+  "weight": 1.4
+}

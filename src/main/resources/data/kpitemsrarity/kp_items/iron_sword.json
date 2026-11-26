@@ -1,11 +1,22 @@
 {
-  "items": ["minecraft:iron_sword"],
+  "items": [
+    "minecraft:iron_sword"
+  ],
   "tier": 2,
   "rarity": "common",
+  "set": "kpitemsrarity:iron",
   "stats": {
-    "damage": [5, 7],
-    "strength": [3, 5],
-    "critical": [1, 2],
-    "critical_damage": [5, 10]
+    "damage": [
+      5,
+      6
+    ],
+    "strength": [
+      7,
+      10
+    ],
+    "critical": [
+      3,
+      5
+    ]
   }
 }

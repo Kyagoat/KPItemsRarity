@@ -4,19 +4,18 @@
   ],
   "tier": 2,
   "rarity": "common",
-  "set": "kpitemsrarity:chainmail",
   "stats": {
     "arrow_damage": [
-      6,
+      5,
+      10
+    ],
+    "strength": [
+      7,
       10
     ],
     "critical": [
-      1,
-      4
-    ],
-    "vitality": [
-      -1,
-      0
+      3,
+      5
     ]
   }
 }

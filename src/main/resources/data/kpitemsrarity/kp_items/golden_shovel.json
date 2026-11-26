@@ -1,9 +1,17 @@
 {
-  "items": ["minecraft:golden_shovel"],
+  "items": [
+    "minecraft:golden_shovel"
+  ],
   "tier": 2,
   "rarity": "common",
   "stats": {
-    "harvest": [8, 12],
-    "luck": [0, 1]
+    "harvest": [
+      16,
+      25
+    ],
+    "luck": [
+      7,
+      11
+    ]
   }
 }

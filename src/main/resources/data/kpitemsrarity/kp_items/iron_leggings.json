@@ -7,20 +7,12 @@
   "set": "kpitemsrarity:iron",
   "stats": {
     "resistance": [
-      0,
+      1,
       1
     ],
     "knockback_resistance": [
-      3,
-      8
-    ],
-    "endurance": [
-      1,
-      3
-    ],
-    "agility": [
-      -2,
-      -1
+      4,
+      6
     ]
   }
 }

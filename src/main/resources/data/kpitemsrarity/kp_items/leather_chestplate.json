@@ -6,17 +6,13 @@
   "rarity": "common",
   "set": "kpitemsrarity:leather",
   "stats": {
-    "arrow_damage": [
-      3,
-      6
-    ],
-    "draw_speed": [
-      0,
+    "vitality": [
+      1,
       2
     ],
-    "vitality": [
-      -1,
-      0
+    "projectile_resistance": [
+      3,
+      4
     ]
   }
 }

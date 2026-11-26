@@ -1,9 +1,17 @@
 {
-  "items": ["minecraft:turtle_helmet"],
+  "items": [
+    "minecraft:turtle_helmet"
+  ],
   "tier": 2,
   "rarity": "common",
   "stats": {
-    "apnea": [2, 3],
-    "swim": [8, 16]
+    "apnea": [
+      1,
+      2
+    ],
+    "vitality": [
+      1,
+      2
+    ]
   }
 }

@@ -4,19 +4,14 @@
   ],
   "tier": 2,
   "rarity": "common",
-  "set": "kpitemsrarity:golden",
   "stats": {
     "harvest": [
-      11,
-      15
+      16,
+      25
     ],
     "luck": [
-      0,
-      1
-    ],
-    "resistance": [
-      -1,
-      0
+      7,
+      11
     ]
   }
 }

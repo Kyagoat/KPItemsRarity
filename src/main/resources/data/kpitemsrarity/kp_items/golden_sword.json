@@ -1,11 +1,22 @@
 {
-  "items": ["minecraft:golden_sword"],
+  "items": [
+    "minecraft:golden_sword"
+  ],
   "tier": 2,
   "rarity": "common",
+  "set": "kpitemsrarity:golden",
   "stats": {
-    "damage": [3, 5],
-    "strength": [2, 4],
-    "luck": [0, 1],
-    "wisdom": [3, 6]
+    "damage": [
+      3,
+      4
+    ],
+    "luck": [
+      11,
+      16
+    ],
+    "strength": [
+      4,
+      7
+    ]
   }
 }

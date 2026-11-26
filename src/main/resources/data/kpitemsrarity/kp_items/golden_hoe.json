@@ -1,9 +1,17 @@
 {
-  "items": ["minecraft:golden_hoe"],
+  "items": [
+    "minecraft:golden_hoe"
+  ],
   "tier": 2,
   "rarity": "common",
   "stats": {
-    "wisdom": [10, 18],
-    "luck": [0, 1]
+    "harvest": [
+      16,
+      25
+    ],
+    "luck": [
+      7,
+      11
+    ]
   }
 }

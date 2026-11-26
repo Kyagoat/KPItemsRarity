@@ -6,21 +6,13 @@
   "rarity": "common",
   "set": "kpitemsrarity:netherite",
   "stats": {
-    "vitality": [
-      2,
-      3
-    ],
-    "fire_resistance": [
-      12,
-      24
-    ],
-    "critical": [
+    "toughness": [
       1,
       2
     ],
-    "healing": [
-      -8,
-      -3
+    "explosion_resistance": [
+      6,
+      9
     ]
   }
 }

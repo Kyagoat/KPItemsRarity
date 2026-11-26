@@ -1,11 +1,21 @@
 {
-  "items": ["minecraft:iron_axe"],
+  "items": [
+    "minecraft:iron_axe"
+  ],
   "tier": 2,
   "rarity": "common",
   "stats": {
-    "damage": [8, 10],
-    "strength": [2, 4],
-    "critical_damage": [10, 15],
-    "armor_pierce": [1, 2]
+    "damage": [
+      8,
+      9
+    ],
+    "strength": [
+      7,
+      10
+    ],
+    "critical_damage": [
+      11,
+      16
+    ]
   }
 }

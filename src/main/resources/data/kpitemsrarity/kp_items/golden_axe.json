@@ -1,11 +1,21 @@
 {
-  "items": ["minecraft:golden_axe"],
+  "items": [
+    "minecraft:golden_axe"
+  ],
   "tier": 2,
   "rarity": "common",
   "stats": {
-    "damage": [6, 8],
-    "strength": [2, 4],
-    "critical_damage": [5, 10],
-    "luck": [0, 1]
+    "damage": [
+      6,
+      7
+    ],
+    "luck": [
+      11,
+      16
+    ],
+    "critical_damage": [
+      11,
+      16
+    ]
   }
 }

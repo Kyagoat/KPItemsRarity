@@ -2,21 +2,16 @@
   "items": [
     "minecraft:shield"
   ],
-  "tier": 2,
+  "tier": 1,
   "rarity": "common",
-  "set": "kpitemsrarity:iron",
   "stats": {
-    "guard": [
-      7,
+    "knockback_resistance": [
+      9,
       13
     ],
-    "endurance": [
+    "resistance": [
       1,
-      4
-    ],
-    "agility": [
-      -2,
-      -1
+      1
     ]
   }
 }

@@ -1,9 +1,17 @@
 {
-  "items": ["minecraft:wooden_hoe"],
+  "items": [
+    "minecraft:wooden_hoe"
+  ],
   "tier": 1,
   "rarity": "common",
   "stats": {
-    "wisdom": [6, 12],
-    "harvest": [0, 3]
+    "harvest": [
+      12,
+      18
+    ],
+    "wisdom": [
+      8,
+      12
+    ]
   }
 }
