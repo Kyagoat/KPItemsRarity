@@ -1196,7 +1196,7 @@
   "stat.kpitemsrarity.intelligence.desc": "Spell power.",
   "stat.kpitemsrarity.luck.desc": "Better odds of dropping this mod's items from the monsters you kill, and more of their ordinary loot (bones, gunpowder, leather...). +100 = double odds.",
   "stat.kpitemsrarity.wisdom.desc": "Extra experience gained.",
-  "stat.kpitemsrarity.healing.desc": "Strength of all healing you receive, except life steal.",
+  "stat.kpitemsrarity.healing.desc": "Strength of every heal you receive: regeneration, potions, food, and the life steal of the Wither sets.",
   "stat.kpitemsrarity.thorns.desc": "Part of the melee damage you take goes back to the attacker.",
   "panel.kpitemsrarity.show_idle": "▸ Show %s inactive stats",
   "panel.kpitemsrarity.hide_idle": "▾ Hide inactive stats",

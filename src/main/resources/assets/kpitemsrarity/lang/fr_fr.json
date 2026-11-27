@@ -1196,7 +1196,7 @@
   "stat.kpitemsrarity.intelligence.desc": "Puissance des sorts.",
   "stat.kpitemsrarity.luck.desc": "Plus de chances de faire tomber les objets du mod sur les monstres que tu tues, et plus de leur butin ordinaire (os, poudre, cuir...). +100 = chances doublées.",
   "stat.kpitemsrarity.wisdom.desc": "Expérience gagnée en plus.",
-  "stat.kpitemsrarity.healing.desc": "Efficacité de tous les soins reçus, sauf le vol de vie.",
+  "stat.kpitemsrarity.healing.desc": "Efficacité de tous les soins reçus : régénération, potions, nourriture, et vol de vie des panoplies Wither.",
   "stat.kpitemsrarity.thorns.desc": "Une part des dégâts de mêlée reçus revient à l'attaquant.",
   "panel.kpitemsrarity.show_idle": "▸ Voir les %s stats inactives",
   "panel.kpitemsrarity.hide_idle": "▾ Masquer les stats inactives",
