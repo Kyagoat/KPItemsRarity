@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "III",
+    "ILI",
+    "I I"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:gold_ingot"
+    },
+    "L": {
+      "item": "minecraft:rabbit_hide"
+    }
+  },
+  "result": {
+    "id": "minecraft:golden_leggings",
+    "count": 1
+  }
+}
