@@ -18,7 +18,7 @@ import java.util.Optional;
  *   "attribute": "minecraft:generic.attack_damage",   // attribut modifié
  *   "operation": "add_multiplied_base",               // add_value | add_multiplied_base | add_multiplied_total
  *   "scale": 0.01,                                    // valeur d'attribut par point (11 points -> +0.11)
- *   "format": "percent",                              // int | percent | tenths (affichage)
+ *   "format": "percent",                              // int | percent | tenths | hearts (affichage ; hearts : 2 points = 1 cœur)
  *   "color": "#C8873A", "category": "combat", "order": 20,
  *   "rune_power": 1, "exo": false                     // utilisés par la forgemagie
  * }
@@ -111,20 +111,27 @@ public class StatDefinition {
         return Component.translatable("stat." + namespace + "." + id);
     }
 
-    /** "+11 %", "-3", "+0.5" selon le format. */
+    /** "+11 %", "-3", "+0.5", "+1.5 ❤" selon le format. */
     public String formatValue(int points, boolean withSign) {
         String sign = withSign && points >= 0 ? "+" : "";
         return switch (format.toLowerCase(Locale.ROOT)) {
             case "percent" -> sign + points + " %";
             case "tenths" -> sign + String.format(Locale.ROOT, "%.1f", points / 10.0);
+            case "hearts" -> sign + hearts(points) + " ❤";
             default -> sign + points;
         };
+    }
+
+    /** Des points de vie en cœurs : 3 → "1.5", 4 → "2". */
+    public static String hearts(int points) {
+        return points % 2 == 0 ? String.valueOf(points / 2) : String.format(Locale.ROOT, "%.1f", points / 2.0);
     }
 
     /** "8 à 15" sans signe ni unité, pour la fourchette grisée. */
     public String formatRange(int min, int max) {
         return switch (format.toLowerCase(Locale.ROOT)) {
             case "tenths" -> String.format(Locale.ROOT, "%.1f - %.1f", min / 10.0, max / 10.0);
+            case "hearts" -> hearts(min) + " - " + hearts(max);
             default -> min + " - " + max;
         };
     }

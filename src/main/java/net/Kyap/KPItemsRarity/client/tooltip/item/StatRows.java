@@ -161,13 +161,14 @@ final class StatRows {
         StatDefinition stat = e.stat();
         RollRange r = e.range();
         if (!e.possible() || r == null || r.min() == r.max()) return stat.formatValue(e.possible() && r != null ? r.min() : e.value(), true);
-        String unit = "percent".equalsIgnoreCase(stat.format) ? " %" : "";
+        String unit = "percent".equalsIgnoreCase(stat.format) ? " %" : "hearts".equalsIgnoreCase(stat.format) ? " ❤" : "";
         return number(stat, r.min()) + " - " + number(stat, r.max()) + unit;
     }
 
     /** Un nombre signé au format de la stat, sans l'unité. */
     private static String number(StatDefinition stat, int points) {
         String sign = points > 0 ? "+" : "";
+        if ("hearts".equalsIgnoreCase(stat.format)) return sign + StatDefinition.hearts(points);
         return "tenths".equalsIgnoreCase(stat.format) ? sign + String.format(Locale.ROOT, "%.1f", points / 10.0) : sign + points;
     }
 

@@ -213,13 +213,13 @@ public final class InventoryStatsPanel {
         return rows;
     }
 
-    /** Bandeau du haut : Vie, Armure, Dégâts (valeurs totales du personnage), avec leur nom au survol. */
+    /** Bandeau du haut : Vie (en cœurs), Armure, Dégâts (en points), avec leur nom au survol. */
     private static void drawBand(GuiGraphics g, Font font, LivingEntity entity, int left, int innerRight, int bandY) {
         g.fill(left - 1, bandY, innerRight + 1, bandY + BAND_H, MID_GREY);
         g.fill(left, bandY + 1, innerRight + 1, bandY + BAND_H, BAND_LIGHT);
         g.fill(left, bandY + 1, innerRight, bandY + BAND_H - 1, BAND_FILL);
         List<BandCell> cells = List.of(
-                new BandCell("panel.kpitemsrarity.health", HEART, null, Texts.number(entity.getMaxHealth())),
+                new BandCell("panel.kpitemsrarity.health", HEART, null, Texts.number(entity.getMaxHealth() / 2f)),
                 new BandCell("panel.kpitemsrarity.armor", ARMOR, null, Texts.number(entity.getArmorValue())),
                 new BandCell("panel.kpitemsrarity.damage", null, SWORD, Texts.number(entity.getAttributeValue(Attributes.ATTACK_DAMAGE))));
         int cellW = (innerRight - left) / cells.size();

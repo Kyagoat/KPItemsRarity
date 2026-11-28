@@ -1181,7 +1181,7 @@
   "stat.kpitemsrarity.arrow_damage.desc": "Dégâts des flèches et carreaux tirés.",
   "stat.kpitemsrarity.draw_speed.desc": "Tends ton arc et recharge ton arbalète plus vite.",
   "stat.kpitemsrarity.range.desc": "Distance à laquelle tu peux frapper une créature.",
-  "stat.kpitemsrarity.vitality.desc": "Points de vie en plus (2 = un cœur).",
+  "stat.kpitemsrarity.vitality.desc": "Cœurs de vie en plus (1 cœur = 2 points de vie).",
   "stat.kpitemsrarity.resistance.desc": "Armure en plus : réduit les dégâts reçus.",
   "stat.kpitemsrarity.toughness.desc": "Réduit les gros coups que l'armure encaisse mal.",
   "stat.kpitemsrarity.knockback_resistance.desc": "Moins de recul quand on te frappe : à 100 %, plus rien ne te fait bouger.",

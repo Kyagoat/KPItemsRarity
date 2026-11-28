@@ -1181,7 +1181,7 @@
   "stat.kpitemsrarity.arrow_damage.desc": "Damage of arrows and bolts you shoot.",
   "stat.kpitemsrarity.draw_speed.desc": "Draw your bow and reload your crossbow faster.",
   "stat.kpitemsrarity.range.desc": "How far away you can hit a creature.",
-  "stat.kpitemsrarity.vitality.desc": "Extra health points (2 = one heart).",
+  "stat.kpitemsrarity.vitality.desc": "Extra hearts of health (1 heart = 2 health points).",
   "stat.kpitemsrarity.resistance.desc": "Extra armor: reduces damage taken.",
   "stat.kpitemsrarity.toughness.desc": "Reduces big hits that armor handles poorly.",
   "stat.kpitemsrarity.knockback_resistance.desc": "Less knockback when you get hit.",

@@ -2,7 +2,7 @@
   "attribute": "minecraft:generic.max_health",
   "operation": "add_value",
   "scale": 1,
-  "format": "int",
+  "format": "hearts",
   "color": "#E07B7B",
   "category": "defense",
   "order": 100,
